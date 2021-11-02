@@ -1,0 +1,20 @@
+Package: hyfer
+Title: R Utilities for Interacting with Hyfe Data
+Version: 0.0.0.9000
+Authors@R: 
+    person("Eric", "Keen", , "eric.k@hyfe.ai", role = c("aut", "cre"))
+Description: R Utilities for Interacting with Hyfe Data
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Imports: 
+    devtools,
+    dplyr,
+    lubridate,
+    magrittr,
+    readr,
+    shiny,
+    stringi,
+    stringr,
+    usethis
