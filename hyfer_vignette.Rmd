@@ -21,18 +21,13 @@ The `hyfer` package provides utilities for interacting with data collected by Hy
 
 This vignette shows how to install `hyfer` and use its functions.  
 
-## Status of package development
-
-- First steps   
-
-
 ## Overview 
 
 Here is a brief synopsis of how to use `hyfer` to work with Hyfe data. The rest of the vignette will cover this process in detail.  
 
-(2) Install `hyfer`.  
+**(1) Install `hyfer`.**  
 
-```{r, echo=TRUE, eval=TRUE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, eval=TRUE, include=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
 library(devtools) 
 library(dplyr)
 library(ggplot2)
@@ -40,19 +35,27 @@ devtools::install_github('hyfe-ai/hyfer')
 library(hyfer)
 ```
 
-(1) Download Hyfe data. Researchers do so from the [Hyfe Research Dashboard](https://dashboard.hyfe.ai/). Hyfe employeers do so using `hyferdrive`. Anyone can do so using the sample dataset that comes with `hyfer`:
+```{r, echo=TRUE, eval=FALSE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+library(devtools) 
+library(dplyr)
+library(ggplot2)
+devtools::install_github('hyfe-ai/hyfer')
+library(hyfer)
+```
+
+**(2) Download Hyfe data.** Researchers do so from the [Hyfe Research Dashboard](https://dashboard.hyfe.ai/). Hyfe employeers do so using `hyferdrive`. Anyone can do so using the sample dataset that comes with `hyfer`:
 
 ```{r, echo=TRUE, eval=TRUE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 data(hyfe_data)
 ```
 
-(3) Process your data to build a `hyfe` object: a list with raw data plus summary tables of user activity and cough rates.  
+**(3) Process your data** to build a `hyfe` object: a list with raw data plus summary tables of user activity and cough rates.  
 
 ```{r, echo=TRUE, eval=TRUE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-# Lump all users together
+# Lump all users together ...
 ho <- process_hyfe_data(hyfe_data)
 
-# Summarize users separately
+# ... or summarize users separately
 ho_users <- process_hyfe_data(hyfe_data, by_user = TRUE)
 
 ```
@@ -67,18 +70,18 @@ ggplot(ho$hours,aes(x=date, y=coughs_tot)) + geom_line() +
   labs(title='Cumulative cough detections') + ylab('Cough detections') 
 ggplot(ho$days,aes(x=date, y=coughs)) + geom_col() + 
   labs(title='Daily time series of coughs (all users)') + ylab('Cough detections') 
-
 # Summarize data for a single user
 ho1 <- ho_users$user_summaries[[2]]
 
 ggplot(ho1$days,aes(x=date, y=coughs)) + geom_col() + 
   labs(title='Daily time series of coughs for user X') + ylab('Cough detections') 
-ggplot(ho1$hours,aes(x=study_hour, y=cough_rate)) + geom_point() +
+ggplot(ho1$hours,aes(x=study_hour, y=cough_rate)) + geom_point(alpha=.3) +
   labs(title='Hourly cough rate in user X') + ylab('Cough detections per hour')  
-ggplot(ho1$hours,aes(x=hour,y=cough_rate)) + geom_jitter(width=.3) +
+ggplot(ho1$hours,aes(x=hour,y=cough_rate)) + geom_jitter(width=.3, alpha=.3) +
+  scale_x_continuous(breaks=0:23) + 
   labs(title='Circadian pattern of cough in user X') + ylab('Cough detections per hour') 
 ggplot(ho1$hours,aes(x=cough_rate)) + geom_histogram() + 
-    labs(title='Hourly distribution of cough rate, user X') + xlab('Cough detections per hour') 
+  labs(title='Hourly distribution of cough rate, user X') + xlab('Cough detections per hour') 
 ```
 
 
@@ -224,11 +227,13 @@ ho_by_user <- process_hyfe_data(hyfe_data,
 
 ### Structure of a `hyfe` object  
 
-The `hyfe` object is designed to accommodate plotting and analysis.  
+Once a `hyfe_data` object is processed, it becomes a `hyfe` object. The structure and formatting of the `hyfe` object is designed to accommodate plotting and analysis.  
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 ho %>% names
 ```
+
+The first several slots contain the raw data from the `hyfe_data` object, and those data are unchanged.  
 
 The `coughs` slot has all explosive sounds classified as a cough, with various new date/time variables to streamline plotting and analysis.   
 
@@ -334,12 +339,6 @@ hyfe_time$timetable %>%
   group_by(uid) %>% 
   summarize(hours_monitored = sum(session_time) / 3600,
             days_monitored = sum(session_time) / 86400)
-```
-
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-hyfe_time$timetable %>% 
-  group_by(uid) %>% 
-  summarize(hours_monitored = sum(session_time) / 3600)
 ```
 
 Instead of a summary of session activity, the `series` slot contains a continuous **second-by-second time series**:  
