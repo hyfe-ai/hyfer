@@ -18,3 +18,6 @@ Imports:
     stringi,
     stringr,
     usethis
+Depends: 
+    R (>= 2.10)
+LazyData: true

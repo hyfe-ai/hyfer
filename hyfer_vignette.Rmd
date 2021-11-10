@@ -1,0 +1,371 @@
+---
+title: "The `hyfer` package"
+author: Eric Keen
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{hyferdrive_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(dplyr)
+```
+
+&nbsp;  
+
+The `hyfer` package provides utilities for interacting with data collected by Hyfe cough detection apps ([www.hyfe.ai](www.hyfe.ai)).   
+
+This vignette shows how to install `hyfer` and use its functions.  
+
+## Status of package development
+
+- First steps   
+
+
+## Setup
+
+### Install `hyfer`
+
+
+```{r, echo=FALSE, eval=TRUE, include=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
+# For now we do a rapid pseudo-installation, by locally loading the package functions:  
+library(dplyr)
+library(devtools) 
+document() 
+load_all()
+```
+
+The `hyfer` package is maintained on `GitHub` and can be installed as follows: 
+
+```{r, echo=TRUE, eval=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(devtools) 
+devtools::install_github('hyfe/hyfer')
+library(hyfer)
+```
+
+### Getting Hyfe data 
+
+This package assumes (1) you already have some Hyfe data locally on your computer, and (2) those data are structured in a standardized way, as a **`hyfe_data` object** *(see next section)*.  
+
+If you do not yet have any data, download data for your research cohort from the [Hyfe Research Dashboard](https://dashboard.hyfe.ai/).  
+
+#### Sample data 
+
+You may also use a sample dataset that comes with the installation of this package:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+data(hyfe_data)
+```
+
+This sample dataset contains Hyfe data for two "super-users" of the [Hyfe Cough Tracker app](https://www.hyfeapp.com/).  
+
+
+## Structure of `hyfe_data` 
+
+The `hyfe_data` object is simply a list with 6 standard slots. 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+names(hyfe_data)
+```
+
+#### `hyfe_data$id_key`  
+
+The `id_key` slot provides the unique identifiers for each user represented in the data.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_data$id_key %>% head()
+```
+
+#### `hyfe_data$sessions`  
+
+The `sessions` slot provides details for each session of user activity for all users in the data.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_data$sessions %>% names()
+
+hyfe_data$sessions %>% head()
+```
+
+#### `hyfe_data$sounds`  
+
+The `sounds` slot provides details for each explosive sound detected for all users in the data.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_data$sounds %>% names()
+
+hyfe_data$sounds %>% head()
+```
+
+#### `hyfe_data$locations`  
+
+The `locations` slot provides details for each location fix for all users in the data. 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_data$locations %>% names()
+
+hyfe_data$locations %>% head()
+```
+
+### `hyfe_data$labels`  
+
+`NULL` for now -- a placeholder for a future time in which we have a table for labelled sounds in CloudSQL.  
+
+### `hyfe_data$cohort_settings`  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_data$cohort_settings %>% names()
+
+hyfe_data$cohort_settings
+```
+
+The `cohort_settings` slot will only be populated if the `hyfe_data` object is for a research cohort. Otherwise this slot will be `NULL`.  
+
+
+## Processing Hyfe data
+
+### `process_hyfe_data()`
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+ho <- process_hyfe_data(hyfe_data,
+                        verbose=TRUE)
+```
+
+This returns a `hyfe` object (`ho` for short variable names), a named list with the original `hyfe_data` slots plus new ones, which is formatted to make subsequent plots and analyses as simple as possible.  The standard `hyfe` object structure is explored in detail in the next session.  
+
+By default, the `process_hyfe_data()` function lumps all user data together to summarize, even if multiple users are present. To summarize each user separately, use the input `by_user`:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+ho_by_user <- process_hyfe_data(hyfe_data,
+                        by_user = TRUE,
+                        verbose=TRUE)
+```
+
+
+### Structure of a `hyfe` object  
+
+The `hyfe` object is designed to accommodate plotting and analysis.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+ho %>% names
+```
+
+The `coughs` slot has all explosive sounds classified as a cough, with various new date/time variables to aid analyses.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+ho$coughs %>% head
+```
+
+The `hours`, `days`, and `weeks` slots hold summary timetables of session activity, peak/cough detections, and cough rates for the entire dataset.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+ho$hours %>% head
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+ho$days %>% head
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+ho$weeks %>% head
+```
+
+When processed by-user, the slot names are slightly different:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+ho_by_user %>% names
+```
+
+The `user_summaries` slot is itself a list; each of its slots pertains to a single user. Each user has a list of 3 tables: `hours`, `days`, and `weeks`.  
+
+
+## Visualizing Hyfe data  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+library(ggplot2)
+ggplot(ho$hours,aes(x=timestamp, y=coughs)) + geom_point() 
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(ho$days,aes(x=date, y=coughs)) + geom_col()
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(ho$hours, aes(x=coughs)) + geom_histogram()
+```
+
+
+### Background functions 
+
+#### `format_hyfe_time()`  
+
+This function uses a set of timestamps to create a dataframe of various date/time variables that will be useful in subsequent `hyfer` functions.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+format_hyfe_time(c(1626851363, 1626951363))
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+format_hyfe_time(c(1626851363, 1626951363), 'UTC')
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+format_hyfe_time(c(1626851363, 1626951363), 'Africa/Kampala')
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+format_hyfe_time(c(1626851363, 1626951363), 'America/Chicago')
+```
+
+
+#### `expand_sessions()`
+
+Most analyses of Hyfe data hinge upon detailed knowledge of when Hyfe was actively listening for coughs, and when it wasn't. To determine the duration of monitoring on an hourly or daily basis, use the `expand_sessions()` function.  
+
+This function returns a list with two slots: `timetable` and `series`.  By default, only the `timetable` is returned in an attempt to speed up processing time.  The `timetable` is a dataframe in which monitoring activity is detailed for each individual user in the dataset.  
+
+To create an **hourly time table:**  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_time <- expand_sessions(hyfe_data, 
+                             unit='hour',
+                             verbose=TRUE)
+
+hyfe_time$timetable %>% nrow
+
+hyfe_time$timetable %>% head
+```
+
+To then summarize session activity for the two users in the sample dataset:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_time$timetable %>% 
+  group_by(uid) %>% 
+  summarize(hours_monitored = sum(session_time) / 3600,
+            days_monitored = sum(session_time) / 86400)
+```
+
+To create a **daily time table:**  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_time <- expand_sessions(hyfe_data, 
+                             unit='day')
+
+hyfe_time$timetable %>% 
+  group_by(uid) %>% 
+  summarize(hours_monitored = sum(session_time) / 3600,
+            days_monitored = sum(session_time) / 86400)
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_time$timetable %>% 
+  group_by(uid) %>% 
+  summarize(hours_monitored = sum(session_time) / 3600)
+```
+
+Instead of a summary of session activity, the `series` slot contains a continuous **second-by-second time series**:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_time <- expand_sessions(hyfe_data,
+                             create_table = FALSE,
+                             create_series = TRUE,
+                             inactive_value = 0)
+```
+
+In this time series, every row is a second between the `floor_date` and `ceiling_date` of the study, and every column is a user (`uid`).  Seconds in which the user is active is represented with a `1`. Inactive seconds are given the value of the input `inactive_value`, the default for which is "0". 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_time$series %>% head
+```
+
+Confirm that the same total monitoring duration, in days, was found using the `series` approach.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_time$series %>% select(2,3) %>% apply(2,sum) / 86400
+```
+
+(Note:  Changing `inactive_value` to `NA` may make it easier to plot session activity as lines on plots.)
+
+#### `hyfe_timetables()`  
+
+To create hourly/daily/weekly summaries of session activity, peak/cough detections, and cough rates, use the function `hyfe_summary_tables()`.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_tables <- hyfe_timetables(hyfe_data,
+                               verbose=TRUE)
+```
+
+This function returns a named list:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+names(hyfe_tables)
+```
+
+**Hourly summary table:**  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_tables$hours %>% as.data.frame %>% head
+```
+
+**Daily summary table**
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_tables$days %>% as.data.frame %>% head
+```
+
+**Weekly summary table:**
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_tables$weeks %>% as.data.frame %>% head
+```
+
+*Note: This function lumps all users together.*
+
+
+## Other utility functions
+
+`synchronize_hyfe_times()`  
+
+## Template for analysis
+
+```{r, echo=TRUE, eval=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
+# Install packages
+
+# Load sample data
+data(hyfe_data)
+
+# Process multiple users at once ===============================================
+
+ho <- process_hyfe_data(hyfe_data, verbose=TRUE)
+
+# Plot something
+ggplot(ho$days,aes(x=date, y=coughs)) + geom_col()
+
+# Process users individually ===================================================
+
+ho_users <- process_hyfe_data(ho, by_user = TRUE, verbose=TRUE)
+
+# Plot user timeseries of coughs
+ggplot(ho_users$user_summaries[[1]]$days,
+       aes(x=date, y=session_hours)) + geom_col()
+
+# Plot user timeseries of coughs
+ggplot(ho_users$user_summaries[[1]]$days,
+       aes(x=date, y=coughs)) + geom_col()
+
+# Plot user timeseries of hourly cough rate
+ggplot(ho_users$user_summaries[[1]]$days,
+       aes(x=date, y=cough_rate)) + geom_col()
+
+# Plot user histogram of hourly cough rate
+ggplot(ho_users$user_summaries[[1]]$hours,
+       aes(x=coughs)) + geom_histogram()
+```
+
+

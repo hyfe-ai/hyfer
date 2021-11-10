@@ -33,3 +33,12 @@ library(devtools) ; document() ; load_all()
 # Create R Files
 #use_r('get_cohort_data')
 
+# Data
+library(hyferdrive)
+library(magrittr)
+library(dplyr)
+uids <- c('9D7SChvklVa7zya0LdU6YVOi9QV2', # navarra+12@hyfeapp.com # smoker
+          '5Ue2PKP6KMUUbQcVIIjWu8rglIU2') # navarra+73@hyfeapp.com # covid
+hyfe_data <- get_user_data(id=uids, id_type='uid', verbose=TRUE)
+usethis::use_data(hyfe_data)
+
