@@ -143,7 +143,7 @@ expand_sessions <- function(hyfe_data,
 
         if(create_series){
           # Add to timeseries df
-          uid_series <- ifelse(ts_series %in% ts_sessions, 1, 0)
+          uid_series <- ifelse(ts_series %in% ts_sessions, 1, inactive_value)
           ts_df$new <- uid_series
           names(ts_df)[ncol(ts_df)] <- uidi
         }
