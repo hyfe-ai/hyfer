@@ -14,7 +14,7 @@ hyfe_timetables <- function(hyfe_data,
                             verbose=TRUE){
 
   if(FALSE){
-    load(hyfe_data)
+    data(hyfe_data)
     hyfe_data <- uid_data
     verbose=TRUE
     timestamp_start = NULL
@@ -58,7 +58,7 @@ hyfe_timetables <- function(hyfe_data,
   if(verbose){message('--- summarizing detections of all explosive sounds ...')}
   tt_peaks <- rep(0,times=nrow(tt))
   sounds <- hyfe_data$sounds
-  recut  <- cut(unique(sounds$timestamp),tt$timestamp,labels=FALSE) ; length(recut)
+  recut  <- cut(sounds$timestamp,tt$timestamp,labels=FALSE) ; length(recut)
   counts <- table(recut)
   tt_indices <- as.numeric(names(counts)) ; tt_indices
   tt_peaks[tt_indices] <- as.numeric(counts) ; tt_peaks
@@ -75,6 +75,19 @@ hyfe_timetables <- function(hyfe_data,
 
   # Rate
   tt <- tt %>%  dplyr::mutate(cough_rate = coughs / session_hours)
+
+  # Add cumulative
+  head(tt)
+  tt <-
+    tt %>%
+    dplyr::mutate(session_seconds_tot = cumsum(session_seconds),
+           session_hours_tot = cumsum(session_hours),
+           session_days_tot = cumsum(session_days),
+           peaks_tot = cumsum(peaks),
+           coughs_tot = cumsum(coughs))
+
+  tt %>% head
+  tt %>% tail
 
   hyfe_hours <- tt
   head(hyfe_hours)
@@ -99,6 +112,18 @@ hyfe_timetables <- function(hyfe_data,
               coughs = sum(coughs)) %>%
     dplyr::mutate(cough_rate = coughs / session_hours)
 
+  hyfe_days <-
+    hyfe_days %>%
+    dplyr::mutate(session_seconds_tot = cumsum(session_seconds),
+                  session_hours_tot = cumsum(session_hours),
+                  session_days_tot = cumsum(session_days),
+                  peaks_tot = cumsum(peaks),
+                  coughs_tot = cumsum(coughs))
+
+  hyfe_days %>% as.data.frame %>% head
+  hyfe_days %>% as.data.frame %>% tail
+  hyfe_days %>% select(peaks,coughs) %>% as.data.frame %>% head(100)
+
   nrow(hyfe_days)
   head(hyfe_days)
   length(unique(hyfe_days$week))
@@ -119,6 +144,14 @@ hyfe_timetables <- function(hyfe_data,
               peaks = sum(peaks),
               coughs = sum(coughs)) %>%
     dplyr::mutate(cough_rate = coughs / session_hours)
+
+  hyfe_weeks <-
+    hyfe_weeks %>%
+    dplyr::mutate(session_seconds_tot = cumsum(session_seconds),
+                  session_hours_tot = cumsum(session_hours),
+                  session_days_tot = cumsum(session_days),
+                  peaks_tot = cumsum(peaks),
+                  coughs_tot = cumsum(coughs))
 
   nrow(hyfe_weeks)
   head(hyfe_weeks)

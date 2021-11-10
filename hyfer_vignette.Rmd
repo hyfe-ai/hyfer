@@ -3,7 +3,7 @@ title: "The `hyfer` package"
 author: Eric Keen
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{hyferdrive_vignette}
+  %\VignetteIndexEntry{hyfer_vignette}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -32,7 +32,7 @@ Here is a brief synopsis of how to use `hyfer` to work with Hyfe data. The rest 
 
 (2) Install `hyfer`.  
 
-```{r, echo=FALSE, eval=TRUE, include=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
+```{r, echo=TRUE, eval=TRUE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 library(devtools) 
 library(dplyr)
 library(ggplot2)
@@ -42,13 +42,13 @@ library(hyfer)
 
 (1) Download Hyfe data. Researchers do so from the [Hyfe Research Dashboard](https://dashboard.hyfe.ai/). Hyfe employeers do so using `hyferdrive`. Anyone can do so using the sample dataset that comes with `hyfer`:
 
-```{r, echo=FALSE, eval=TRUE, include=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
+```{r, echo=TRUE, eval=TRUE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 data(hyfe_data)
 ```
 
 (3) Process your data to build a `hyfe` object: a list with raw data plus summary tables of user activity and cough rates.  
 
-```{r, echo=FALSE, eval=TRUE, include=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
+```{r, echo=TRUE, eval=TRUE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 # Lump all users together
 ho <- process_hyfe_data(hyfe_data)
 
@@ -59,22 +59,26 @@ ho_users <- process_hyfe_data(hyfe_data, by_user = TRUE)
 
 (4) Plot your data using the `hyfe` object.   
 
-```{r, echo=FALSE, eval=TRUE, include=FALSE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
-# Daily timeseries of coughs (all users)
-ggplot(ho$days,aes(x=date, y=coughs)) + geom_col()
+```{r, echo=TRUE, eval=TRUE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+# Summarize data across all users
+ggplot(ho$hours,aes(x=date, y=session_days_tot)) + geom_line() +
+  labs(title='Cumulative person-days of monitoring') + ylab('Person-days') 
+ggplot(ho$hours,aes(x=date, y=coughs_tot)) + geom_line() +
+  labs(title='Cumulative cough detections') + ylab('Cough detections') 
+ggplot(ho$days,aes(x=date, y=coughs)) + geom_col() + 
+  labs(title='Daily time series of coughs (all users)') + ylab('Cough detections') 
 
-# Daily timeseries of coughs (just one user)
+# Summarize data for a single user
 ho1 <- ho_users$user_summaries[[2]]
-ggplot(ho1$days,aes(x=date, y=coughs)) + geom_col()
 
-# Daily timeseries of hourly cough rate
-ggplot(ho1$hours,aes(x=study_hour, y=cough_rate)) + geom_point()
-
-# Plot circadian pattern in user cough
-ggplot(ho1$hours,aes(x=hour,y=cough_rate)) + geom_jitter(width=.3) 
-
-# Plot distribution of hourly cough rate
-ggplot(ho1$hours,aes(x=cough_rate)) + geom_histogram()
+ggplot(ho1$days,aes(x=date, y=coughs)) + geom_col() + 
+  labs(title='Daily time series of coughs for user X') + ylab('Cough detections') 
+ggplot(ho1$hours,aes(x=study_hour, y=cough_rate)) + geom_point() +
+  labs(title='Hourly cough rate in user X') + ylab('Cough detections per hour')  
+ggplot(ho1$hours,aes(x=hour,y=cough_rate)) + geom_jitter(width=.3) +
+  labs(title='Circadian pattern of cough in user X') + ylab('Cough detections per hour') 
+ggplot(ho1$hours,aes(x=cough_rate)) + geom_histogram() + 
+    labs(title='Hourly distribution of cough rate, user X') + xlab('Cough detections per hour') 
 ```
 
 
@@ -82,7 +86,7 @@ ggplot(ho1$hours,aes(x=cough_rate)) + geom_histogram()
 
 ### Install `hyfer`
 
-```{r, echo=FALSE, eval=TRUE, include=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, eval=FALSE, include=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
 # For now we do a rapid pseudo-installation, by locally loading the package functions:  
 library(dplyr)
 library(devtools) 
@@ -104,9 +108,9 @@ library(hyfer)
 
 This package assumes (1) you already have some Hyfe data locally on your computer, and (2) those data are structured in a standardized way, as a **`hyfe_data` object** *(see next section)*.  
 
-Hyfe's research collaborators can download data for their respective research cohorts from the [Hyfe Research Dashboard](https://dashboard.hyfe.ai/).  
+Hyfe's research collaborators can download data for their respective research cohorts from the [Hyfe Research Dashboard](https://dashboard.hyfe.ai/). Hyfe's internal analysts download data directly using `hyferdrive`, a private company package.  
 
-Hyfe's internal analysts download data directly using `hyferdrive`, a private company package. Both the dashboard and `hyferdrive` deliver data structured in exactly the same way, allowing both groups to utilize the functions offered in `hyfer`.  
+Both the dashboard and `hyferdrive` deliver data structured in exactly the same way, allowing both groups to utilize the functions offered in `hyfer`.  
 
 To get started in `hyfer`, begin by using a sample dataset that comes built-in to the package:  
 
@@ -182,11 +186,12 @@ hyfe_data$locations %>% head()
 ```
 
 Note that some studies, such as the one related to this sample data, have location data service disabled.  
-### `hyfe_data$labels`  
+
+#### `hyfe_data$labels`  
 
 This slot is empty for now. It is a placeholder for a future time in which hyfe will have  manually labelled sounds from a dataset associated with it inside the `hyfe_data` object. 
 
-### `hyfe_data$cohort_settings`  
+#### `hyfe_data$cohort_settings`  
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 hyfe_data$cohort_settings %>% names()
@@ -263,7 +268,7 @@ ho_by_user$user_summaries[[1]] %>% names
 Custom plotting functions are under construction. For now, `ggplot` works well with `hyfe` objects (see examples in Overview above.)
  
  
-### Background functions 
+## Background functions 
 
 The function `process_hyfe_data` relies on several background functions to do its thing. Those functions can be called directly if you have need for them:  
 
@@ -362,7 +367,7 @@ Note that this `series` feature is only useful in certain circumstances, and it 
 
 **Tip:** Changing the inactive `inactive_value` to `NA` may make it easier to plot session activity as lines on plots.
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.height=6.5}
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
 hyfe_time <- expand_sessions(hyfe_data,
                              create_table = FALSE,
                              create_series = TRUE,
@@ -394,7 +399,7 @@ hyfe_tables <- hyfe_timetables(hyfe_data,
                                verbose=TRUE)
 ```
 
-This function is essentially a wrapper for `expand_sessions()`, and calls both that function and `format_hyfe_time()`.  
+This function is essentially a wrapper for `expand_sessions()`, and calls both that function and `format_hyfe_time()`.  *Note: This function lumps all users together.*
 
 This function returns a named list:  
 
@@ -420,17 +425,13 @@ hyfe_tables$days %>% as.data.frame %>% head
 hyfe_tables$weeks %>% as.data.frame %>% head
 ```
 
-*Note: This function lumps all users together.*
 
-
-## Upcoming functions  
-
-- Function for getting cumulative totals  
+## Upcoming improvements
 
 - Custom plotting functions  
 
 - `synchronize_hyfe_times()`  for synchronizing Hyfe data to a set of labels. 
 
-
+- Much, much more!  
 
 
