@@ -71,7 +71,7 @@ plot_total <- function(ho,
   # Test to see if `ho` is user-separated
   this_by_user <- 'user_summaries' %in% names(hoi)
 
-  # If so, pool data
+  # If so, pool data (unless the plot inputs say otherwise)
   if(this_by_user){
     hoi <- pool_user_data(hoi,
                           group_users = !by_user,
@@ -141,10 +141,12 @@ plot_total <- function(ho,
   # Build plot =================================================================
 
   if(by_user & this_by_user){
+    # Keep users separate
     p <-ggplot2::ggplot(df, ggplot2::aes(x=x, y=y, color=uid)) +
       ggplot2::theme(legend.text = ggplot2::element_text(size=4)) +
       ggplot2::geom_line()
   }else{
+    # Pool all users
     if(by_user){message('Sorry, cannot plot by user -- `hyfe` object is an aggregation.')}
     p <-ggplot2::ggplot(df, ggplot2::aes(x=x, y=y)) +
       ggplot2::geom_line(alpha=.5,lwd=1.5,col='darkblue') +
@@ -159,7 +161,7 @@ plot_total <- function(ho,
 
   # Return
   return_list <- list()
-  if(return_plot){return_list$p <- p}
+  if(return_plot){return_list$plot <- p}
   if(return_data){return_list$data <- df}
   if(print_plot){print(p)}
   if(length(return_list)>0){return(return_list)}
