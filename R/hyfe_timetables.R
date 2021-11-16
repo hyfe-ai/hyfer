@@ -1,6 +1,7 @@
 #' Produce summary tables of Hyfe data (hourly, daily, weekly)
 #'
 #' @param hyfe_data A standard `hyfe_data` object.
+#' @param tz desc
 #' @param timestamp_start If you want to specify the beginning of the time table, enter timestamp here.
 #' @param timestamp_stop Specify end of timetable, if you want.
 #' @param verbose Print status updates?
@@ -9,6 +10,7 @@
 #' @export
 #'
 hyfe_timetables <- function(hyfe_data,
+                            tz = NULL,
                             timestamp_start = NULL,
                             timestamp_stop = NULL,
                             verbose=TRUE){
@@ -17,8 +19,12 @@ hyfe_timetables <- function(hyfe_data,
     data(hyfe_data)
     hyfe_data <- uid_data
     verbose=TRUE
+    tz = NULL
     timestamp_start = NULL
     timestamp_stop = NULL
+
+    hyfe_data <- uid_data
+    lapply(hyfe_data,nrow)
   }
 
   # Get subset of coughs
@@ -31,6 +37,7 @@ hyfe_timetables <- function(hyfe_data,
   #}else{
     hyfe_time <- expand_sessions(hyfe_data,
                                  unit = 'hour',
+                                 tz = tz,
                                  timestamp_start,
                                  timestamp_stop,
                                  verbose=verbose)$timetable
@@ -147,6 +154,7 @@ hyfe_timetables <- function(hyfe_data,
 
   hyfe_weeks <-
     hyfe_weeks %>%
+    dplyr::arrange(study_week) %>%
     dplyr::mutate(session_seconds_tot = cumsum(session_seconds),
                   session_hours_tot = cumsum(session_hours),
                   session_days_tot = cumsum(session_days),

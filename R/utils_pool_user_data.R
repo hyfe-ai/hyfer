@@ -1,0 +1,156 @@
+pool_user_data <- function(ho_by_user,
+                           group_users = TRUE,
+                           verbose = TRUE){
+
+  if(FALSE){
+    # debugging only - not run
+    data(ho_by_user)
+    group_users <- TRUE
+  }
+
+  hoi <- ho_by_user
+
+  #if('user_summaries' %in% names(hoi)){
+    ho_hours <- ho_days <- ho_weeks <- data.frame()
+    i=1
+    for(i in 1:length(hoi$user_summaries)){
+      useri <- hoi$user_summaries[[i]]
+      names(useri)
+      hoursi <- data.frame(useri$hours, useri$id_key)
+      daysi <- data.frame(useri$days, useri$id_key)
+      weeksi <- data.frame(useri$weeks, useri$id_key)
+
+      ho_hours <- rbind(ho_hours, hoursi)
+      ho_days <- rbind(ho_days, daysi)
+      ho_weeks <- rbind(ho_weeks, weeksi)
+    }
+
+    hours_agg <- ho_hours
+    days_agg <- ho_days
+    weeks_agg <- ho_weeks
+
+    if(group_users){
+
+      # Hours
+      if(verbose){message('--- compiling hours table...')}
+      head(ho_hours)
+      hours_base <- ho_hours %>%
+        dplyr::select(timestamp:frac_hour) %>%
+        dplyr::group_by(study_hour) %>%
+        dplyr::summarize_all(min)
+      hours_base %>% head
+
+      head(ho_hours)
+      hours_uid <- ho_hours %>%
+        dplyr::select(study_hour, uid, session_seconds) %>%
+        dplyr::group_by(study_hour) %>%
+        dplyr::summarize(n_uid = length(which(session_seconds > 0)))
+      hours_uid %>% head
+      table(hours_uid$n_uid)
+      nrow(hours_uid)
+
+      head(ho_hours)
+      hours_sum <- ho_hours %>%
+        dplyr::select(study_hour, session_seconds:coughs) %>%
+        dplyr::group_by(study_hour) %>%
+        dplyr::summarize_all(sum)
+      hours_sum %>% head
+
+      hours_agg <- left_join(hours_base,hours_uid, by='study_hour')
+      hours_agg <- left_join(hours_agg,hours_sum, by='study_hour')
+      head(hours_agg)
+      hours_agg$cough_rate <- hours_agg$coughs / hours_agg$session_hours
+      hours_agg$session_seconds_tot <- hours_agg$session_seconds %>% cumsum
+      hours_agg$session_hours_tot <- hours_agg$session_hours %>% cumsum
+      hours_agg$session_days_tot <- hours_agg$session_days %>% cumsum
+      hours_agg$peaks_tot <- hours_agg$peaks %>% cumsum
+      hours_agg$coughs_tot <- hours_agg$coughs %>% cumsum
+
+      ho_hours %>% names
+      hours_agg %>% names
+
+      # Days
+      if(verbose){message('--- compiling days table...')}
+      head(ho_days)
+      days_base <- ho_days %>%
+        dplyr::select(date:study_day) %>%
+        dplyr::group_by(study_day) %>%
+        dplyr::summarize_all(min)
+      days_base %>% head
+
+      head(ho_days)
+      days_uid <- ho_days %>%
+        dplyr::select(study_day, uid, session_seconds) %>%
+        dplyr::group_by(study_day) %>%
+        dplyr::summarize(n_uid = length(which(session_seconds > 0)))
+      days_uid %>% head
+
+      head(ho_days)
+      days_sum <- ho_days %>%
+        dplyr::select(study_day, session_seconds:coughs) %>%
+        dplyr::group_by(study_day) %>%
+        dplyr::summarize_all(sum)
+      days_sum %>% head
+
+      days_agg <- left_join(days_base,days_uid, by='study_day')
+      days_agg <- left_join(days_agg, days_sum, by='study_day')
+      head(days_agg)
+      days_agg$cough_rate <- days_agg$coughs / days_agg$session_hours
+      days_agg$session_seconds_tot <- days_agg$session_seconds %>% cumsum
+      days_agg$session_hours_tot <- days_agg$session_hours %>% cumsum
+      days_agg$session_days_tot <- days_agg$session_days %>% cumsum
+      days_agg$peaks_tot <- days_agg$peaks %>% cumsum
+      days_agg$coughs_tot <- days_agg$coughs %>% cumsum
+
+      ho_days %>% names
+      days_agg %>% names
+
+      # Weeks
+      if(verbose){message('--- compiling weeks table...')}
+      head(ho_weeks)
+      weeks_base <- ho_weeks %>%
+        dplyr::select(week:study_week) %>%
+        dplyr::group_by(study_week) %>%
+        dplyr::summarize_all(min)
+      weeks_base %>% head
+
+      head(ho_weeks)
+      weeks_uid <- ho_weeks %>%
+        dplyr::select(study_week, uid, session_seconds) %>%
+        dplyr::group_by(study_week) %>%
+        dplyr::summarize(n_uid = length(which(session_seconds > 0)))
+      weeks_uid %>% head
+
+      head(ho_weeks)
+      weeks_sum <- ho_weeks %>%
+        dplyr::select(study_week, session_seconds:coughs) %>%
+        dplyr::group_by(study_week) %>%
+        dplyr::summarize_all(sum)
+      weeks_sum %>% head
+
+      weeks_agg <- left_join(weeks_base,weeks_uid, by='study_week')
+      weeks_agg <- left_join(weeks_agg, weeks_sum, by='study_week')
+      head(weeks_agg)
+      weeks_agg$cough_rate <- weeks_agg$coughs / weeks_agg$session_hours
+      weeks_agg$session_seconds_tot <- weeks_agg$session_seconds %>% cumsum
+      weeks_agg$session_hours_tot <- weeks_agg$session_hours %>% cumsum
+      weeks_agg$session_days_tot <- weeks_agg$session_days %>% cumsum
+      weeks_agg$peaks_tot <- weeks_agg$peaks %>% cumsum
+      weeks_agg$coughs_tot <- weeks_agg$coughs %>% cumsum
+
+      ho_weeks %>% names
+      weeks_agg %>% names
+
+    }
+
+  #}else{
+  #  hours_agg <- ho$hours
+  #  days_agg <- ho$days
+  #  weeks_agg <- ho$weeks
+  #}
+
+  return(list(hours = hours_agg,
+              days = days_agg,
+              weeks = weeks_agg))
+
+}

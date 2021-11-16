@@ -6,6 +6,7 @@
 #' (since a session start on day 1 and ending on day 3 means that all of day 2 was recorded)
 #' @param hyfe_data A hyfe_data object
 #' @param unit Day, hour (not yet implemented)
+#' @param tz desc
 #' @param verbose Print status updates?
 #' @return A list with `timetable` (a dataframe with one row per person-date or person-hour)
 #' and `series` (a dataframe in which each row is a timestamp, and each column is a UID)
@@ -15,6 +16,7 @@ expand_sessions <- function(hyfe_data,
                             unit = 'hour',
                             timestamp_start = NULL,
                             timestamp_stop = NULL,
+                            tz = NULL,
                             create_table = TRUE,
                             create_series = FALSE,
                             inactive_value = 0,
@@ -25,8 +27,8 @@ expand_sessions <- function(hyfe_data,
     # for debugging
     data(hyfe_data)
     unit  = 'hour'
-    create_table = FALSE
-    create_series = TRUE
+    create_table = TRUE
+    create_series = FALSE
     inactive_value = 0
     verbose=TRUE
   }
@@ -34,7 +36,10 @@ expand_sessions <- function(hyfe_data,
   if(verbose){message('--- staging time series . . .')}
 
   sessions <- hyfe_data$sessions ; head(sessions)
-  tz <- hyfe_data$cohort_settings$timezone ; head(tz)
+  if(is.null(tz)){
+    tz <- hyfe_data$cohort_settings$timezone ; head(tz)
+  }
+  if(length(tz)>1){tz <- 'UTC'}
 
   if(nrow(sessions) < 1){
     return(data.frame())
@@ -48,21 +53,32 @@ expand_sessions <- function(hyfe_data,
     if(!is.null(timestamp_start)){
       ts_start <- timestamp_start
     }else{
-      ts_start <-
-        sessions$start %>% min() %>%
-        format_hyfe_time(timezone=tz) %>%
-        dplyr::select(date_floor) %>%
-        as.numeric()
+      ts1 <- sessions$start %>% min()
+      ts1 <- format_hyfe_time(ts1, timezone=tz)
+      ts1 <- ts1$date_floor[1]
+      ts1 <- as.numeric(ts1)
+      ts_start <- ts1
+      #ts_start <-
+      #  sessions$start %>% min() %>%
+      #  format_hyfe_time(timezone=tz) %>%
+      #  dplyr::select(date_floor) %>%
+      #  as.numeric()
     }
 
     if(!is.null(timestamp_stop)){
       ts_stop <- timestamp_stop
     }else{
-      ts_stop <-
-      sessions$stop %>% max() %>%
-      format_hyfe_time(timezone = tz) %>%
-      dplyr::select(date_ceiling) %>%
-      as.numeric()
+      ts1 <- sessions$start %>% max()
+      ts1 <- format_hyfe_time(ts1, timezone=tz)
+      ts1 <- ts1$date_ceiling[1]
+      ts1 <- as.numeric(ts1)
+      ts_stop <- ts1
+
+      #ts_stop <-
+      #sessions$stop %>% max() %>%
+      #format_hyfe_time(timezone = tz) %>%
+      #dplyr::select(date_ceiling) %>%
+      #as.numeric()
     }
 
     tot_duration <- ts_stop - ts_start

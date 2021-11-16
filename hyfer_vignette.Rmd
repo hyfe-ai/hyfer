@@ -50,10 +50,10 @@ data(hyfe_data)
 ho <- process_hyfe_data(hyfe_data)
 
 # ... or process users separately
-ho_users <- process_hyfe_data(hyfe_data, by_user = TRUE)
+ho_by_user <- process_hyfe_data(hyfe_data, by_user = TRUE)
 
-# summarize users
-
+# summarize data
+hyfe_summarize(ho_by_user)
 
 # Now ready for plotting, etc. 
 ```
@@ -264,7 +264,7 @@ To summarize Hyfe data from multiple users in a way that is truly balanced, in w
 hyfe_summarize(ho_by_user)
 ```
 
-In the `users` slot of the output, you now you have a summary table for each user. That user table is then used to build the `overall` slot.  The mean rates (i.e., `hourly_rate` and `daily_rate`) are the average of each user's mean rates, and -- importantly -- the variability metrics (`hourly_var`, `hourly_sd`, `daily_var`, `daily_sd`) now pertain to the variability *among* users.   
+In the `users` slot of the output, you now you have a row summarizing each user. That user table is then used to build the `overall` slot.  The mean rates (i.e., `hourly_rate` and `daily_rate`) are the average of each user's mean rates, and -- importantly -- the variability metrics (`hourly_var`, `hourly_sd`, `daily_var`, `daily_sd`) now pertain to the variability *among* users.   
 
 The `hyfe_summarize()` function uses sample size cutoffs to ensure that rates are no swung to extremes due to insufficient monitoring For example, an hour of day with 1 cough detection but only 1 minute of monitoring would produce an hourly cough rate estimate of 60 coughs per hour, when in fact that is simply not enough time to approximate cough rate.  The default cutoffs are: at least 30 minutes of monitoring must occur within a hour-long window of the day in order for that hour to contribute to the estimation of the hourly cough rate; and at least 4 hours of monitoring must occur within a day in order for that day to count toward the daily cough rate.  
 

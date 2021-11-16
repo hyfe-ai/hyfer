@@ -13,16 +13,18 @@ process_hyfe_data <- function(hyfe_data,
 
   if(FALSE){
     data(hyfe_data)
-    by_user = TRUE
+    by_user = FALSE
     verbose=TRUE
   }
 
   ho <- hyfe_data
 
   # Stage timezone
-  tz <- hyfe_data$cohort_settings$timezone ; head(tz)
-  if(is.null(tz)){tz <- 'UTC'}
-  if(is.na(tz)){tz <- 'UTC'}
+  tz <- unique(hyfe_data$cohort_settings$timezone) ; head(tz)
+  if(is.null(tz[1])){tz <- 'UTC'}
+  if(is.na(tz[1])){tz <- 'UTC'}
+  if(length(tz)>1){tz <- 'UTC'}
+  tz
 
   # Stage results
   coughs <- NULL
@@ -70,17 +72,19 @@ process_hyfe_data <- function(hyfe_data,
     ts_stop <- max(hyfe_data$sessions$stop)
 
     hyfe_tables <- list()
+    i=1
     for(i in 1:length(uids)){
       uidi <- uids[i]
       uid_data <- filter_to_user(uid=uidi, hyfe_data)
 
-      if(nrow(uid_data$sessions)>0){
+      if(nrow(uid_data$sessions[uid_data$sessions$duration > 0,]) > 0){
         if(verbose){message('--- building summary tables for user ',i,' out of ',length(uids),' : ',uidi)}
         user_tables <- hyfe_timetables(uid_data,
                                        timestamp_start = ts_start,
                                        timestamp_stop = ts_stop,
                                        verbose=FALSE)
         user_tables$id_key <- hyfe_data$id_key %>% filter(uid == uidi)
+        #user_tables$hours
         #user_tables$hours %>% nrow %>% print
         #user_tables$hours %>% tail
         #user_tables$days %>% tail

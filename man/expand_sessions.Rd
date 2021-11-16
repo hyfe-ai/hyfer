@@ -9,6 +9,7 @@ expand_sessions(
   unit = "hour",
   timestamp_start = NULL,
   timestamp_stop = NULL,
+  tz = NULL,
   create_table = TRUE,
   create_series = FALSE,
   inactive_value = 0,
@@ -19,6 +20,8 @@ expand_sessions(
 \item{hyfe_data}{A hyfe_data object}
 
 \item{unit}{Day, hour (not yet implemented)}
+
+\item{tz}{desc}
 
 \item{verbose}{Print status updates?}
 }

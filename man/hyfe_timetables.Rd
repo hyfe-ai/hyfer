@@ -6,6 +6,7 @@
 \usage{
 hyfe_timetables(
   hyfe_data,
+  tz = NULL,
   timestamp_start = NULL,
   timestamp_stop = NULL,
   verbose = TRUE
@@ -13,6 +14,8 @@ hyfe_timetables(
 }
 \arguments{
 \item{hyfe_data}{A standard \code{hyfe_data} object.}
+
+\item{tz}{desc}
 
 \item{timestamp_start}{If you want to specify the beginning of the time table, enter timestamp here.}
 
