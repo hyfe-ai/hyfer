@@ -110,7 +110,7 @@ hyfe_timetables <- function(hyfe_data,
               session_days = sum(session_seconds) / 86400,
               peaks = sum(peaks),
               coughs = sum(coughs)) %>%
-    dplyr::mutate(cough_rate = coughs / session_hours)
+    dplyr::mutate(cough_rate = (coughs / session_hours)*24)
 
   hyfe_days <-
     hyfe_days %>%
@@ -143,7 +143,7 @@ hyfe_timetables <- function(hyfe_data,
               session_days = sum(session_seconds) / 86400,
               peaks = sum(peaks),
               coughs = sum(coughs)) %>%
-    dplyr::mutate(cough_rate = coughs / session_hours)
+    dplyr::mutate(cough_rate = (coughs / session_hours)*24*7)
 
   hyfe_weeks <-
     hyfe_weeks %>%

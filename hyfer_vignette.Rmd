@@ -19,69 +19,43 @@ knitr::opts_chunk$set(
 
 The `hyfer` package provides utilities for interacting with data collected by Hyfe cough detection apps ([www.hyfe.ai](www.hyfe.ai)). This package was designed to be used by Hyfe analysts and external research partners alike.   
 
-This vignette shows how to install `hyfer` and use its functions.  
 
-## Overview 
+## `hyfer` in a nutshell 
 
-Here is a brief synopsis of how to use `hyfer` to work with Hyfe data. The rest of the vignette will cover this process in detail.  
+Put simply, `hyfer` processes raw Hyfe data -- which you downloaded in a standard format referred to as a **`hyfe_data`** object -- into a polished format for tables and plots. We refer to that post-processed, analysis-ready data as a **`hyfe`** object.  
 
-**(1) Install `hyfer`.**  
+&nbsp;  
+<center>
+![](img/workflow.png){width=70%}
+</center>
+&nbsp;  
 
-```{r, echo=FALSE, eval=TRUE, include=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
-library(devtools) 
-library(dplyr)
-library(ggplot2)
-devtools::install_github('hyfe-ai/hyfer')
-library(hyfer)
-```
+The following chunk of code shows you the whole game; use it as a template for starting your own analysis. The rest of the vignette explains each bit of this code, demonstrates other `hyfer` functions, and provides plot examples. 
 
 ```{r, echo=TRUE, eval=FALSE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+# Install hyfer
 library(devtools) 
-library(dplyr)
-library(ggplot2)
-devtools::install_github('hyfe-ai/hyfer')
+devtools::install_github('hyfe-ai/hyfer', quiet=TRUE)
 library(hyfer)
-```
 
-**(2) Download Hyfe data.** Researchers do so from the [Hyfe Research Dashboard](https://dashboard.hyfe.ai/). Hyfe employeers do so using `hyferdrive`. Anyone can do so using the sample dataset that comes with `hyfer`:
+# Other dependencies
+library(dplyr)
+library(lubridate)
+library(ggplot2)
 
-```{r, echo=TRUE, eval=TRUE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+# Bring in your hyfe_data object (here we use sample data)
 data(hyfe_data)
-```
 
-**(3) Process your data** to build a `hyfe` object: a list with raw data plus summary tables of user activity and cough rates.  
-
-```{r, echo=TRUE, eval=TRUE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-# Lump all users together ...
+# Process data for all users together
 ho <- process_hyfe_data(hyfe_data)
 
-# ... or summarize users separately
+# ... or process users separately
 ho_users <- process_hyfe_data(hyfe_data, by_user = TRUE)
 
-```
+# summarize users
 
-(4) Plot your data using the `hyfe` object.   
 
-```{r, echo=TRUE, eval=TRUE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
-# Summarize data across all users
-ggplot(ho$hours,aes(x=date, y=session_days_tot)) + geom_line() +
-  labs(title='Cumulative person-days of monitoring') + ylab('Person-days') 
-ggplot(ho$hours,aes(x=date, y=coughs_tot)) + geom_line() +
-  labs(title='Cumulative cough detections') + ylab('Cough detections') 
-ggplot(ho$days,aes(x=date, y=coughs)) + geom_col() + 
-  labs(title='Daily time series of coughs (all users)') + ylab('Cough detections') 
-# Summarize data for a single user
-ho1 <- ho_users$user_summaries[[2]]
-
-ggplot(ho1$days,aes(x=date, y=coughs)) + geom_col() + 
-  labs(title='Daily time series of coughs for user X') + ylab('Cough detections') 
-ggplot(ho1$hours,aes(x=study_hour, y=cough_rate)) + geom_point(alpha=.3) +
-  labs(title='Hourly cough rate in user X') + ylab('Cough detections per hour')  
-ggplot(ho1$hours,aes(x=hour,y=cough_rate)) + geom_jitter(width=.3, alpha=.3) +
-  scale_x_continuous(breaks=0:23) + 
-  labs(title='Circadian pattern of cough in user X') + ylab('Cough detections per hour') 
-ggplot(ho1$hours,aes(x=cough_rate)) + geom_histogram() + 
-  labs(title='Hourly distribution of cough rate, user X') + xlab('Cough detections per hour') 
+# Now ready for plotting, etc. 
 ```
 
 
@@ -90,7 +64,7 @@ ggplot(ho1$hours,aes(x=cough_rate)) + geom_histogram() +
 ### Install `hyfer`
 
 ```{r, echo=FALSE, eval=FALSE, include=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
-# For now we do a rapid pseudo-installation, by locally loading the package functions:  
+# optional code for local fast load -- not included in vignette
 library(dplyr)
 library(devtools) 
 document() 
@@ -99,13 +73,19 @@ load_all()
 
 The `hyfer` package is maintained on `GitHub` and can be installed as follows: 
 
-```{r, echo=TRUE, eval=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
-library(dplyr)
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 library(devtools) 
-devtools::install_github('hyfe-ai/hyfer')
+devtools::install_github('hyfe-ai/hyfer', quiet=TRUE)
 library(hyfer)
 ```
 
+Hyfe data have been formatted for use with the `tidyverse` of packages, particularly `dplyr`, `lubridate`, and `ggplot2`. 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+```
 
 ### Getting Hyfe data 
 
@@ -124,7 +104,6 @@ data(hyfe_data)
 This sample dataset contains Hyfe data for two "super-users" of the [Hyfe Cough Tracker app](https://www.hyfeapp.com/).  
 
 
-
 ## Structure of `hyfe_data` 
 
 All downloaded Hyfe data are provided in a standardized data format: a `hyfe_data` object. A `hyfe_data` object is simply a list with 6 standard slots. 
@@ -134,6 +113,7 @@ names(hyfe_data)
 ```
 
 A detailed description of each slot is provided below.  
+
 
 #### `hyfe_data$id_key`  
 
@@ -202,7 +182,7 @@ hyfe_data$cohort_settings %>% names()
 hyfe_data$cohort_settings
 ```
 
-The `cohort_settings` slot will only be populated if the `hyfe_data` object is for a research cohort. Otherwise this slot will be `NULL`.  Critically, the `cohort_settings` contains the timezone used to determine local time in the function `format_hyfe_time()`.  
+The `cohort_settings` slot will only be populated if the `hyfe_data` object is for a research cohort. Otherwise this slot will be `NULL`.  Critically, `cohort_settings` contains the timezone used to determine local time in the function `format_hyfe_time()`.  
 
 
 ## Processing Hyfe data
@@ -248,11 +228,11 @@ ho$hours %>% head
 ```
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-ho$days %>% head
+ho$days %>% as.data.frame %>% head
 ```
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-ho$weeks %>% head
+ho$weeks %>% as.data.frame %>% head
 ```
 
 Note that when processed with `by_user = TRUE`, the slot names are slightly different:  
@@ -261,21 +241,109 @@ Note that when processed with `by_user = TRUE`, the slot names are slightly diff
 ho_by_user %>% names
 ```
 
-The `user_summaries` slot is itself a list; each of its slots pertains to a single user. Each user has a list of 3 tables: `hours`, `days`, and `weeks`.  
+The `user_summaries` slot is itself a list; each of its slots pertains to a single user. Each user has a list of 4 tables: `hours`, `days`, `weeks`, and `id_key`.  
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 # Data structure for first user 
 ho_by_user$user_summaries[[1]] %>% names
 ```
 
+## Summarize Hyfe data  
+
+To get summary metrics for a `hyfe` object, use the function `hyfe_summarize()`:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_summarize(ho)
+```
+
+Since the `ho` object was processed by aggregating all users together (note that the `users` slot in the output is `NULL`), the cough rates reported should be treated with caution: these rates are going to be biased by users with (1) a lot of monitoring time and (2) a lot of coughs.  
+
+To summarize Hyfe data from multiple users in a way that is truly balanced, in which each user is weighted equally, you should use a `hyfe` object processed with `by_user = TRUE`:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_summarize(ho_by_user)
+```
+
+In the `users` slot of the output, you now you have a summary table for each user. That user table is then used to build the `overall` slot.  The mean rates (i.e., `hourly_rate` and `daily_rate`) are the average of each user's mean rates, and -- importantly -- the variability metrics (`hourly_var`, `hourly_sd`, `daily_var`, `daily_sd`) now pertain to the variability *among* users.   
+
+The `hyfe_summarize()` function uses sample size cutoffs to ensure that rates are no swung to extremes due to insufficient monitoring For example, an hour of day with 1 cough detection but only 1 minute of monitoring would produce an hourly cough rate estimate of 60 coughs per hour, when in fact that is simply not enough time to approximate cough rate.  The default cutoffs are: at least 30 minutes of monitoring must occur within a hour-long window of the day in order for that hour to contribute to the estimation of the hourly cough rate; and at least 4 hours of monitoring must occur within a day in order for that day to count toward the daily cough rate.  
+
+You may adjust those defaults using the function arguments. For example, here is a much more stringent set of requirements, which may improve the accuracy of rate estimates but severely reduces sample size: 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_summarize(ho_by_user,
+               cutoff_hourly = 59,
+               cutoff_daily = 23.9)
+```
+
+Note that the cumulative counts are unaffected by these cutoffs, only the rates.  
+
+
 ## Visualizing Hyfe data  
 
 Custom plotting functions are under construction. For now, `ggplot` works well with `hyfe` objects (see examples in Overview above.)
- 
- 
-## Background functions 
 
-The function `process_hyfe_data` relies on several background functions to do its thing. Those functions can be called directly if you have need for them:  
+### Cumulative plots  
+
+For multiple users or cohorts;  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(ho$hours,aes(x=date, y=session_days_tot)) + geom_line() +
+  labs(title='Cumulative person-days of monitoring') + ylab('Person-days') 
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(ho$hours,aes(x=date, y=coughs_tot)) + geom_line() +
+  labs(title='Cumulative cough detections') + ylab('Cough detections') 
+```
+
+For individual users:
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ho1 <- ho_by_user$user_summaries[[2]]
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(ho1$hours,aes(x=date, y=coughs_tot)) + geom_line() +
+  labs(title='Cumulative cough detections') + ylab('Cough detections') 
+```
+
+### Time series  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(ho$days,aes(x=date, y=coughs)) + geom_col() + 
+  labs(title='Daily time series of coughs (all users)') + ylab('Cough detections') 
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(ho1$days,aes(x=date, y=coughs)) + geom_col() + 
+  labs(title='Daily time series of coughs for user X') + ylab('Cough detections') 
+```
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(ho1$hours,aes(x=study_hour, y=cough_rate)) + geom_point(alpha=.3) +
+  labs(title='Hourly cough rate in user X') + ylab('Cough detections per hour')  
+```
+
+### Circadian patterns 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(ho1$hours,aes(x=hour,y=cough_rate)) + geom_jitter(width=.3, alpha=.3) +
+  scale_x_continuous(breaks=0:23) + 
+  labs(title='Circadian pattern of cough in user X') + ylab('Cough detections per hour') 
+```
+
+### Cough distributions   
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(ho1$hours,aes(x=cough_rate)) + geom_histogram() + 
+  labs(title='Hourly distribution of cough rate, user X') + xlab('Cough detections per hour') 
+```
+
+
+## Background functions in `hyfer` 
+
+The function `process_hyfe_data` relies on several background functions to do its thing. Those functions can also be called directly if you have need for them:  
 
 #### `format_hyfe_time()`  
 
@@ -306,7 +374,7 @@ format_hyfe_time(c(1626851363, 1626951363), 'America/Chicago')
 
 Most analyses of Hyfe data hinge upon detailed knowledge of when Hyfe was actively listening for coughs, and when it wasn't. To determine the duration of monitoring on an hourly or daily basis, use the `expand_sessions()` function.  
 
-This function returns a list with two slots: `timetable` and `series`.  By default, only the `timetable` is returned in an attempt to speed up processing time.  The `timetable` is a dataframe in which monitoring activity is detailed for each individual user in the dataset.  
+This function returns a list with two slots: `timetable` and `series`.  By default, `series` is returned as a `NULL` object since it is usually only needed for troubleshooting and can be time-consuming to prepare. The `timetable` is a dataframe in which monitoring activity is detailed for each individual user in the dataset on an hourly or daily basis.  
 
 To create an **hourly time table:**  
 
@@ -350,7 +418,7 @@ hyfe_time <- expand_sessions(hyfe_data,
                              inactive_value = 0)
 ```
 
-In this time series, every row is a second between the `floor_date` and `ceiling_date` of the study, and every column is a user (`uid`).  Seconds in which the user is active is represented with a `1`. Inactive seconds are given the value of the input `inactive_value`, the default for which is "0". 
+In this time series, every row is a second between the `floor_date` and `ceiling_date` of the study, and every column is a user (`uid`).  Seconds in which the user is active is represented with a "`1`". Inactive seconds are given the value of the input `inactive_value`, the default for which is "`0`". 
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 hyfe_time$series %>% head
@@ -373,6 +441,7 @@ hyfe_time <- expand_sessions(hyfe_data,
                              inactive_value = NA)
 
 # Setup plot
+par(mar=c(4.2,4.2,.5,.5))
 plot(1, type='n', 
      xlim=range(hyfe_time$series$timestamp), 
      ylim=c(0,3),

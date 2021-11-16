@@ -3,5 +3,6 @@
 export(app_screening)
 export(expand_sessions)
 export(format_hyfe_time)
+export(hyfe_summarize)
 export(hyfe_timetables)
 export(process_hyfe_data)

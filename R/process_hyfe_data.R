@@ -7,7 +7,6 @@
 #' @return
 #' @export
 #'
-#' @examples
 process_hyfe_data <- function(hyfe_data,
                               by_user = FALSE,
                               verbose=TRUE){
@@ -81,6 +80,7 @@ process_hyfe_data <- function(hyfe_data,
                                        timestamp_start = ts_start,
                                        timestamp_stop = ts_stop,
                                        verbose=FALSE)
+        user_tables$id_key <- hyfe_data$id_key %>% filter(uid == uidi)
         #user_tables$hours %>% nrow %>% print
         #user_tables$hours %>% tail
         #user_tables$days %>% tail
