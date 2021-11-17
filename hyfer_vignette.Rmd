@@ -285,38 +285,39 @@ Custom plotting functions are under construction. For now, `ggplot` works well w
 
 ### Cumulative plots  
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3.8}
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3}
 plot_total(ho)
 ```
 
 By default, `plot_total()` plots sessions. But you can specify for detections of explosive sounds ... 
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3.8}
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3}
 plot_total(ho, type='sounds')
 ```
 
 ... and of coughs: 
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3.8}
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3}
 plot_total(ho, type='coughs')
 ```
 
 The default time unit for this function is `days`, but you can specify for `hours` ....
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3.8}
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3}
 plot_total(ho, type='coughs', unit='hours')
 ```
 
 ... and for `weeks` as well:  
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3.8}
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3}
 plot_total(ho, type='coughs', unit='weeks')
 ```
 
-This function, like other `plot...()` functions in `hyfer`, allow you to return the dataset underlying the plot in addition to (or instead of) producing the plot. 
+This function, like other `plot...()` functions in `hyfer`, allows you to return the dataset underlying the plot in addition to (or instead of) producing the plot. 
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3.8}
-plot_total(ho,unit='weeks', 
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3}
+plot_total(ho,
+           unit='weeks', 
            type='coughs', 
            print_plot = FALSE, 
            return_data = TRUE)
@@ -324,7 +325,7 @@ plot_total(ho,unit='weeks',
 
 This function also allows you to return the `ggplot` object so that you can add to it before printing the plot:  
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3.8}
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3}
 plot_total(ho, 
            unit='days',
            type='sessions',
@@ -335,15 +336,15 @@ plot_total(ho,
 
 These plot functions also accept `ho` objects that are processed with `by_user = TRUE`: 
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3.8}
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3}
 plot_total(ho_by_user,unit='hours', type='coughs')
 ```
 
-Note that the users individual datasets are pooled in order to make a single aggregate plot.  
+Note that the users' individual datasets are pooled in order to make a single aggregate plot.  
 
 But when using `ho_by_user`, you can also plot each user separately on the same plot:  
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3.8}
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3}
 plot_total(ho_by_user,unit='hours', type='coughs', by_user = TRUE)
 ```
 
@@ -351,11 +352,18 @@ plot_total(ho_by_user,unit='hours', type='coughs', by_user = TRUE)
 ### Time series  
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+plot_timeseries(ho)
+plot_timeseries(ho, unit='weeks')
+```
+
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
 ggplot(ho$days,aes(x=date, y=coughs)) + geom_col() + 
   labs(title='Daily time series of coughs (all users)') + ylab('Cough detections') 
 ```
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ho1 <- ho_by_user$user_summaries[[2]]
 ggplot(ho1$days,aes(x=date, y=coughs)) + geom_col() + 
   labs(title='Daily time series of coughs for user X') + ylab('Cough detections') 
 ```
