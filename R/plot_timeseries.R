@@ -1,4 +1,4 @@
-#' Plot Hyfe totals
+#' Plot Hyfe timeseries
 #'
 #' @param ho desc
 #' @param type desc

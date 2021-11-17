@@ -1,6 +1,6 @@
 ---
 title: "The `hyfer` package"
-author: Eric Keen
+author: Eric Keen @ [Hyfe](www.hyfe.ai)
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{hyfer_vignette}
