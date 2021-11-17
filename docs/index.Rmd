@@ -1,6 +1,6 @@
 ---
 title: "The `hyfer` package"
-author: Eric Keen @ [Hyfe](www.hyfe.ai)
+author: Eric Keen @ [Hyfe](https://www.hyfe.ai/)
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{hyfer_vignette}
@@ -266,7 +266,9 @@ hyfe_summarize(ho_by_user)
 
 In the `users` slot of the output, you now you have a row summarizing each user. That user table is then used to build the `overall` slot.  The mean rates (i.e., `hourly_rate` and `daily_rate`) are the average of each user's mean rates, and -- importantly -- the variability metrics (`hourly_var`, `hourly_sd`, `daily_var`, `daily_sd`) now pertain to the variability *among* users.   
 
-The `hyfe_summarize()` function uses sample size cutoffs to ensure that rates are no swung to extremes due to insufficient monitoring For example, an hour of day with 1 cough detection but only 1 minute of monitoring would produce an hourly cough rate estimate of 60 coughs per hour, when in fact that is simply not enough time to approximate cough rate.  The default cutoffs are: at least 30 minutes of monitoring must occur within a hour-long window of the day in order for that hour to contribute to the estimation of the hourly cough rate; and at least 4 hours of monitoring must occur within a day in order for that day to count toward the daily cough rate.  
+The `hyfe_summarize()` function uses sample size cutoffs to ensure that rates are not swung to extremes due to insufficient monitoring. For example, an hour of day with 1 cough detection but only 1 minute of monitoring would produce an hourly cough rate estimate of 60 coughs per hour. Those scenarios should be avoided.  
+
+The default cutoffs are: at least 30 minutes of monitoring must occur within a hour-long window of the day in order for that hour to contribute to the estimation of the hourly cough rate; and at least 4 hours of monitoring must occur within a day in order for that day to count toward the daily cough rate.  
 
 You may adjust those defaults using the function arguments. For example, here is a much more stringent set of requirements, which may improve the accuracy of rate estimates but severely reduces sample size: 
 
@@ -353,22 +355,10 @@ plot_total(ho_by_user,unit='hours', type='coughs', by_user = TRUE)
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
 plot_timeseries(ho)
-plot_timeseries(ho, unit='weeks')
-```
-
-
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
-ggplot(ho$days,aes(x=date, y=coughs)) + geom_col() + 
-  labs(title='Daily time series of coughs (all users)') + ylab('Cough detections') 
 ```
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
-ho1 <- ho_by_user$user_summaries[[2]]
-ggplot(ho1$days,aes(x=date, y=coughs)) + geom_col() + 
-  labs(title='Daily time series of coughs for user X') + ylab('Cough detections') 
-```
-
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ho1 <- ho_by_user$user_summaries[[1]]
 ggplot(ho1$hours,aes(x=study_hour, y=cough_rate)) + geom_point(alpha=.3) +
   labs(title='Hourly cough rate in user X') + ylab('Cough detections per hour')  
 ```
