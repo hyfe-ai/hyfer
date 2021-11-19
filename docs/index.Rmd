@@ -531,7 +531,7 @@ hyfe_tables$days %>% as.data.frame %>% head
 hyfe_tables$weeks %>% as.data.frame %>% head
 ```
 
-## Cough bouts {#bouts}
+#### Cough bouts {#bouts}
 
 The `cough_bouts()` function allows you to "pool" coughs that occur very close in time. This option can be useful in a medical context as well as in clinical validation experiments. 
 
@@ -550,16 +550,16 @@ Compare the number of coughs to the number of bouts:
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 coughs %>% nrow
-bouts %>% bouts
+bouts %>% nrow
 ```
 
 Examine how many coughs were contaiend in these bouts:  
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-bouts$n %>% table 
+bouts$n_coughs %>% table 
 ```
 
-Most bouts contain a single cough, but some contained two or three, and a couple contained four.  
+Most bouts contain a single cough, but some contained two or three, and a few contained more than that. 
 
 
 ## Upcoming improvements
