@@ -1,0 +1,99 @@
+#' Cough bouts
+#'
+#' @param coughs desc
+#' @param bout_window desc
+#' @param verbose  desc
+#'
+#' @return
+#' @export
+#'
+cough_bouts <- function(coughs,
+                        bout_window = 2,
+                        bout_limit = Inf,
+                        verbose=TRUE){
+
+  if(FALSE){
+    # deubgging -- not run
+    library(magrittr)
+    library(dplyr)
+    data(ho)
+    coughs <- ho$coughs
+    bout_window = 2
+    verbose = TRUE
+    bout_limit = Inf
+
+    # Test
+    mr <- cough_bouts(coughs)
+    mr$n_coughs %>% table
+  }
+
+  # dc = detections of coughs
+  # a `sounds` table (formatted into a Hyfe object by `hyfer`)
+  # filtered to cough detections only.
+  dc <- coughs
+  head(dc)
+
+  if(nrow(dc)<=1){
+    bouts <- data.frame()
+  }else{
+
+    # stage results
+    bouts <- data.frame()
+
+    # get UIDs in coughs table
+    uids <- unique(dc$uid) ; uids
+
+    # Loop through each user
+    for(uidi in uids){
+      #uidi <- uids[1] # for debugging
+      uidi
+      if(verbose){message('--- creating bout table for ',uidi,' ...')}
+
+      # subset coughs to this user only
+      bouti <- dc[dc$uid == uidi,]
+      if(nrow(bouti)>0){
+
+        # make sure cough detections are arranged in time
+        bouti <- bouti %>% dplyr::arrange(timestamp)
+
+        # Assign bout IDs
+        bout_id <- c(1)
+        bout_index <- 1
+        coughs_in_bout <- 0
+        i=1
+        for(i in 1:(nrow(bouti)-1)){
+          time_since_last <- bouti$timestamp[i+1] - bouti$timestamp[i]
+          if(time_since_last > bout_window |
+             coughs_in_bout >= bout_limit){
+             bout_index <- bout_index + 1
+          }
+          bout_id <- c(bout_id, bout_index)
+        }
+        bouti$bout_id <- bout_id
+
+        # Reduce cough table to a bout table: one row for each bout timestamp
+        # retain all the useful date/time variables for downstream analyses
+        head(bouti)
+
+        boutsi <- bouti %>%
+          dplyr::group_by(bout_id) %>%
+          dplyr::summarize(uid=uid[1],
+                           timestamp=mean(timestamp),
+                           date_time = mean(date_time),
+                           dplyr::across(date:frac_hour, min),
+                           n_coughs = dplyr::n())
+
+        # Add this user's bouts to the results table
+        bouts <- rbind(bouts,boutsi)
+      }
+    }
+  }
+
+  # checkout results
+  bouts$bout_id <- 1:nrow(bouts)
+  nrow(bouts)
+  head(bouts)
+
+  # output
+  return(bouts)
+}

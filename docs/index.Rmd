@@ -285,7 +285,7 @@ Note that the cumulative counts are unaffected by these cutoffs, only the rates.
 
 Custom plotting functions are under construction. For now, `ggplot` works well with `hyfe` objects (see examples in Overview above.)
 
-### Cumulative plots  
+### Cumulative plots {#plots}
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=3}
 plot_total(ho)
@@ -530,6 +530,36 @@ hyfe_tables$days %>% as.data.frame %>% head
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 hyfe_tables$weeks %>% as.data.frame %>% head
 ```
+
+## Cough bouts {#bouts}
+
+The `cough_bouts()` function allows you to "pool" coughs that occur very close in time. This option can be useful in a medical context as well as in clinical validation experiments. 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+data(ho)
+coughs <- ho$coughs
+bouts <- cough_bouts(coughs,
+                     bout_window = 2,
+                     bout_limit = Inf,
+                     verbose=FALSE)
+```
+
+In the code above, the inputs specify that coughs occurring within 2 seconds of each other should be pooled into a single cough bout, and that there is no limit to the number of coughs that can occur in a single bout. 
+
+Compare the number of coughs to the number of bouts: 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+coughs %>% nrow
+bouts %>% bouts
+```
+
+Examine how many coughs were contaiend in these bouts:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+bouts$n %>% table 
+```
+
+Most bouts contain a single cough, but some contained two or three, and a couple contained four.  
 
 
 ## Upcoming improvements
