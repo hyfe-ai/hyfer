@@ -1,4 +1,4 @@
-#' Plot Hyfe totals
+#' Plot Hyfe circadian patterns
 #'
 #' @param ho desc
 #' @param type desc
