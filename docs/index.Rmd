@@ -211,7 +211,7 @@ If you want to work with data from only a single user in a `hyfe_data` object co
 
 ```{r, echo=TRUE, eval=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
 # Look at your ID options
-hyfe_data_id_key
+hyfe_data$id_key
 
 # Filter data to the first ID in that list
 hyfe_data_1 <- filter_to_user(uid = hyfe_data$id_key$uid[1],
@@ -409,10 +409,12 @@ Diagnostic plots can be helpful in data review and technical troubleshooting. To
 plot_cohort_diagnostic(ho)
 ```
 
+In this plot, each user has a row of data. The grey bars indicate session activity and red dots indicate cough detections.  
+
 
 To produce a diagnostic plot for a single user, use `plot_user_diagnostic()`:  
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=6.5}
 # Look at your ID options
 hyfe_data$id_key
 
