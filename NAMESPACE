@@ -2,6 +2,7 @@
 
 export(app_screening)
 export(cough_bouts)
+export(cough_rate_distribution)
 export(expand_sessions)
 export(format_hyfe_time)
 export(hyfe_summarize)

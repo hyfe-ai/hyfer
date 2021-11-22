@@ -1,4 +1,13 @@
-cough_rate_distribution <- function(ho){
+#' Cough rate distribution
+#'
+#' @param ho desc
+#' @param min_session desc
+#'
+#' @return
+#' @export
+#'
+cough_rate_distribution <- function(ho,
+                                    min_session = 0.5){
 
   #=============================================================================
   # for debugging only -- not run!
@@ -7,6 +16,12 @@ cough_rate_distribution <- function(ho){
     data(hyfe_data)
     ho <- process_hyfe_data(hyfe_data)
     ho_by_user <- process_hyfe_data(hyfe_data, by_user = TRUE)
+    hoi <- ho_by_user
+
+    min_session = .5
+
+    cough_rate_distribution(ho)
+    cough_rate_distribution(ho_by_user)$users %>% head(20)
 
   }
   #=============================================================================
@@ -16,14 +31,61 @@ cough_rate_distribution <- function(ho){
   # Test to see if `ho` is user-separated
   this_by_user <- 'user_summaries' %in% names(hoi)
   if(this_by_user){
-
-    hoi <- pool_user_data(hoi,
-                          group_users = !by_user,
-                          verbose=verbose)
+    # Data were processed separately for each user:
+    hourlies <- data.frame()
+    i=2
+    for(i in 1:length(hoi$user_summaries)){
+      useri <- hoi$user_summaries[[i]]
+      names(useri)
+      useri$id_key
+      hoursi <- useri$hours
+      hoursi$uid <- useri$id_key$uid[1]
+      names(hoursi)
+      hoursi <-
+        hoursi %>%
+        dplyr::filter(session_hours >= min_session) %>%
+        dplyr::select(uid, timestamp:n_uid, session_hours:cough_rate)
+      hoursi
+      hourlies <- rbind(hourlies, hoursi)
+    }
+  }else{
+    # Data were processed in aggregate
+    hourlies <-
+      hoursi %>%
+      dplyr::mutate(uid = 'aggregate') %>%
+      dplyr::filter(session_hours >= min_session) %>%
+      dplyr::select(uid, timestamp:session_hours, peaks, coughs, cough_rate)
   }
 
+  hourlies
 
-  return_list <- list()
+  # user summaries
+  user_summaries <-
+    hourlies %>%
+    dplyr::group_by(uid) %>%
+    dplyr::summarize(rate_mean = mean(cough_rate, na.rm=TRUE),
+                     rate_variance = var(cough_rate, na.rm=TRUE),
+                     n_hours = dplyr::n(),
+                     n_uid = length(unique(uid)))
+  user_summaries
+
+  # overall summary
+  overall_summary <- user_summaries %>%
+    dplyr::summarize(mean_of_mean = mean(rate_mean, na.rm=TRUE),
+                     sd_of_mean = sd(rate_mean, na.rm=TRUE),
+                     mean_of_variance = mean(rate_variance, na.rm=TRUE),
+                     sd_of_variance = sd(rate_variance, na.rm=TRUE),
+                     n_hours_tot = sum(n_hours),
+                     n_hours_mean = mean(n_hours,na.rm=TRUE),
+                     n_uid = dplyr::n())
+  overall_summary
+
+
+  # Prep return
+  return_list <- list(overall = overall_summary,
+                      users = user_summaries,
+                      rates = as.numeric(hourlies$cough_rate),
+                      details = hourlies)
 
   return(return_list)
 }

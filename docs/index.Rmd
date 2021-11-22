@@ -400,10 +400,104 @@ plot_circadian(ho_by_user, by_user=TRUE)
 
 ### Cough distributions   
 
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+```{r, echo=TRUE, eval=FALSE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
 ggplot(ho1$hours,aes(x=cough_rate)) + geom_histogram() + 
   labs(title='Hourly distribution of cough rate, user X') + xlab('Cough detections per hour') 
 ```
+
+
+## Analytical tools 
+
+### Cough rate distributions (#distributions) 
+
+To get details and summaries about the distribution of cough rates in your data, use the function `cough_rate_distribution()`.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+cough_rates <- cough_rate_distribution(ho_by_user, 
+                                       min_session = 0.5)
+```
+
+This function can take both aggregated data (`ho`) and user-separated (`ho_by_user`), but it does best with the latter. It returns metrics about hourly cough rates based on hour-by-hour analysis of the data. The argument `min_session` allows you to define the minimum amount of monitoring required during a single hour in order for that hour to be included in the cough rate estimation. For example, sometimes an hour of day contains only a few minutes of monitoring for a user; that makes for a pretty poor estimate of that hour's cough rate. The default `min_session` is 0.5 hours, or 30 minutes of monitoring within an hour.  
+
+The function returns a list with four slots:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+cough_rates %>% names()
+```
+
+The slot `$overall` returns a one-row summary of the entire dataset:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+cough_rates$overall
+```
+
+The slot `$users` returns a summary for every user contained in the data:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+cough_rates$users
+```
+
+The slot `$rates` returns a numeric vector of hourly cough rates that satisfy the minimum monitoring threshold:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+cough_rates$rates %>% head(100)
+```
+
+The slot `$details` returns a dataframe with all details you might need to analyze these rates (essentially the `hours` table from a `hyfe` object):   
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+cough_rates$details %>% head()
+```
+
+This function should make it straightforward to plot cough rate histograms...
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(cough_rates$details, 
+       aes(x=cough_rate)) + 
+  geom_histogram() + 
+  xlab('Coughs per hour') + ylab('Count') + 
+  facet_wrap(~uid)
+```
+
+... or scatterplots of the relationship between cough rate mean and cough rate variance among users:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+ggplot(cough_rates$users, 
+       aes(x=rate_mean, y=rate_variance)) + 
+  geom_point() + 
+  xlab('Mean cough rate (coughs per hour)') + ylab('Variance in cough rate')
+```
+
+
+#### Cough bouts {#bouts}
+
+The `cough_bouts()` function allows you to "pool" coughs that occur very close in time. This option can be useful in a medical context as well as in clinical validation experiments. 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+data(ho)
+coughs <- ho$coughs
+bouts <- cough_bouts(coughs,
+                     bout_window = 2,
+                     bout_limit = Inf,
+                     verbose=FALSE)
+```
+
+In the code above, the inputs specify that coughs occurring within 2 seconds of each other should be pooled into a single cough bout, and that there is no limit to the number of coughs that can occur in a single bout. 
+
+Compare the number of coughs to the number of bouts: 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+coughs %>% nrow
+bouts %>% nrow
+```
+
+Examine how many coughs were contaiend in these bouts:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+bouts$n_coughs %>% table 
+```
+
+Most bouts contain a single cough, but some contained two or three, and a few contained more than that. 
 
 
 
@@ -559,40 +653,9 @@ hyfe_tables$days %>% as.data.frame %>% head
 hyfe_tables$weeks %>% as.data.frame %>% head
 ```
 
-#### Cough bouts {#bouts}
-
-The `cough_bouts()` function allows you to "pool" coughs that occur very close in time. This option can be useful in a medical context as well as in clinical validation experiments. 
-
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-data(ho)
-coughs <- ho$coughs
-bouts <- cough_bouts(coughs,
-                     bout_window = 2,
-                     bout_limit = Inf,
-                     verbose=FALSE)
-```
-
-In the code above, the inputs specify that coughs occurring within 2 seconds of each other should be pooled into a single cough bout, and that there is no limit to the number of coughs that can occur in a single bout. 
-
-Compare the number of coughs to the number of bouts: 
-
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-coughs %>% nrow
-bouts %>% nrow
-```
-
-Examine how many coughs were contaiend in these bouts:  
-
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-bouts$n_coughs %>% table 
-```
-
-Most bouts contain a single cough, but some contained two or three, and a few contained more than that. 
-
 
 ## Upcoming improvements
 
-- Custom plotting functions  
 
 - `synchronize_hyfe_times()`  for synchronizing Hyfe data to a set of labels. 
 
