@@ -207,6 +207,22 @@ ho_by_user <- process_hyfe_data(hyfe_data,
                         verbose=TRUE)
 ```
 
+If you want to work with data from only a single user in a `hyfe_data` object containing data from multiple users, use the function `filter_to_user()` before processing. Your workflow would look like: 
+
+```{r, echo=TRUE, eval=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
+# Look at your ID options
+hyfe_data_id_key
+
+# Filter data to the first ID in that list
+hyfe_data_1 <- filter_to_user(uid = hyfe_data$id_key$uid[1],
+                     hyfe_data)
+
+# Now process the data into a hyfe object
+ho <- process_hyfe_data(hyfe_data_1)
+```
+
+As explained above, the argument `uid` refers to the anonymous identifier assigns to each user.
+
 
 ### Structure of a `hyfe` object  
 
@@ -361,13 +377,13 @@ To overlap users such that all of their timeseries begin at the origin, use `plo
 For each user separately:
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
-plot_trajectory(ho, type='rate', unit = 'days')
+plot_trajectory(ho_by_user, type='rate', unit = 'days')
 ```
 
 For all user trajectories pooled together: 
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
-plot_trajectory(ho, type='coughs', unit = 'days', pool_users = TRUE)
+plot_trajectory(ho_by_user, type='coughs', unit = 'days', pool_users = TRUE)
 ```
 
 
@@ -384,6 +400,33 @@ For each user separately:
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
 plot_circadian(ho_by_user, by_user=TRUE)
 ```
+
+### Diagnostic plots
+
+Diagnostic plots can be helpful in data review and technical troubleshooting. To explore all of a cohort dataset quickly at once, use `plot_cohort_diagnostic()`:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+plot_cohort_diagnostic(ho)
+```
+
+
+To produce a diagnostic plot for a single user, use `plot_user_diagnostic()`:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+# Look at your ID options
+hyfe_data$id_key
+
+# Filter data to the first ID in that list
+hyfe_data_1 <- filter_to_user(uid = hyfe_data$id_key$uid[1],
+                     hyfe_data)
+
+# Now process the data into a hyfe object for a single user
+ho1 <- process_hyfe_data(hyfe_data_1)
+
+plot_user_diagnostic(ho1)
+```
+
+The grey bars indicate session activity and the red dots indicate cough detections.  
 
 
 ## Analytical tools 

@@ -1,0 +1,88 @@
+#' Plot diagnostic plot for a cohort
+#'
+#' @param ho desc by user only
+#'
+#' @return
+#' @export
+#'
+plot_cohort_diagnostic <- function(ho){
+
+  #=============================================================================
+  if(FALSE){
+    # debugging only - not run
+    data(hyfe_data)
+    ho <- process_hyfe_data(hyfe_data, by_user = TRUE)
+
+  }
+  #=============================================================================
+
+  users <- unique(ho$sessions$uid) ; users
+  #users <- length(ho$user_summaries)
+
+  xmin <- lubridate::as_datetime(min(ho$sessions$start)) %>%
+    lubridate::floor_date(unit='day')
+
+  xmax <- lubridate::as_datetime(max(ho$sessions$start)) %>%
+    lubridate::ceiling_date(unit='day')
+
+  xmin
+  xmax
+
+  par(mar=c(3.5,8.5,.05,.05))
+  plot(1,type='n',
+       ylim=c(.8,length(users)+.2),
+       xlim=c(xmin,xmax),
+       ann=FALSE,axes=FALSE)
+
+  ats <- seq(xmin,xmax, length=10) ; ats
+  ats <- as_datetime(ats)
+  labs <- substr(ats,6,16) ; labs
+  axis(1, at=ats, labels=labs, cex.axis=.5)
+
+  axis(2,at=1:length(users),labels=users,cex.axis=.5, las=2)
+
+  # Set up area and lines
+  polygon(x=c(xmin, xmax, xmax, xmin),
+          y=c(.8,.8,length(users)+.2,length(users)+.2),
+          col='grey95',border=NA)
+
+  # White lines indicating date (horizontal)
+  segments(x0=xmin,
+           x1=xmax,
+           y0=1:length(users),
+           y1=1:length(users),
+           lwd=1,
+           col='white')
+
+  # White lines indicating time of day (vertical)
+  segments(x0=ats,
+           x1=ats,
+           y0=0.8,
+           y1=length(users)+2,
+           lwd=1,
+           col='white')
+
+  # Loop through users
+  y=1
+  for(y in 1:length(users)){
+    uidi <- users[y]
+
+    yadj <- .02
+    # sessions
+    sessi <- ho$sessions %>% dplyr::filter(uid == uidi)
+    segments(x0=sessi$start,
+             x1=sessi$stop,
+             y0=y - yadj,
+             y1=y - yadj,
+             col='grey60')
+
+    # coughs
+    coughi <- ho$coughs %>% dplyr::filter(uid == uidi)
+    points(x=coughi$date_time,
+           y=rep(y + yadj,times=nrow(coughi)),
+           cex=.3,
+           pch=16,
+           col=adjustcolor('firebrick',alpha.f=.3))
+  }
+
+}

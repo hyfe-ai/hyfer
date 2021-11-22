@@ -1,3 +1,11 @@
+#' Filter to user
+#'
+#' @param uid desc
+#' @param hyfe_data desc
+#'
+#' @return
+#' @export
+#'
 filter_to_user <- function(uid=NULL,
                            hyfe_data){
 

@@ -1,0 +1,70 @@
+#' Plot diagnostic plot for a single user
+#'
+#' @param ho desc
+#'
+#' @return
+#' @export
+#'
+plot_user_diagnostic <- function(ho){
+
+  #=============================================================================
+  if(FALSE){
+    data(hyfe_data)
+    hyfe_data <- filter_to_user(uid=ho$id_key$uid[1], hyfe_data)
+    ho <- process_hyfe_data(hyfe_data)
+
+  }
+  #=============================================================================
+
+  hoi <- ho # save a safe copy
+  hours <- hoi$hours
+
+  par(mar=c(3.5,3.5,.05,.05))
+  plot(1,type='n',ann=FALSE,axes=FALSE,
+       xlim=c(0,24),
+       ylim=rev(range(hours$date)))
+
+  axis(1,at=0:24, cex.axis=.5)
+  title(xlab='Hour of day', cex.lab=.5, line=2)
+  axis(2,at=unique(hours$date), labels=as.character(unique(hours$date)),cex.axis=.5, las=2)
+  title(xlab='Hour of day', cex.lab=.5, line=2)
+
+  # Set up area and lines
+  polygon(x=c(0,24,24,0),
+          y=c(min(hours$date),min(hours$date),
+              max(hours$date),max(hours$date)),
+          col='grey95',border=NA)
+
+  # White lines indicating date (horizontal)
+  segments(x0=0,
+           x1=24,
+           y0=hours$date,
+           y1=hours$date,
+           lwd=.5,
+           col='white')
+
+  # White lines indicating time of day (vertical)
+  segments(x0=c(3,6,9,12,15,18,21,24),
+           x1=c(3,6,9,12,15,18,21,24),
+           y0=min(hours$date),
+           y1=max(hours$date),
+           lwd=1,
+           col='white')
+
+  # Session activity
+  sessi <- hours[hours$session_hours > 0,]
+  segments(x0=sessi$hour,
+           x1=sessi$hour + sessi$session_hours,
+           y0=sessi$date,
+           y1=sessi$date,
+           lwd=.7,
+           col='grey60')
+
+  # Coughs
+  points(x=ho$coughs$hour + (ho$coughs$frac_hour - floor(ho$coughs$frac_hour)),
+         y=ho$coughs$date,
+         cex=.5,
+         pch=16,
+         col=adjustcolor('firebrick',alpha.f=.5))
+
+}

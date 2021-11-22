@@ -28,7 +28,7 @@ plot_trajectory <- function(ho,
     data(hyfe_data)
     ho <- process_hyfe_data(hyfe_data, by_user = TRUE)
 
-    type <- 'sessions'
+    type <- 'rate'
     unit <- 'days'
 
     day_max = NULL
