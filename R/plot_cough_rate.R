@@ -50,7 +50,6 @@ plot_cough_rate <- function(ho,
 
   # Stage safe copies of datasets
   hoi <- ho
-  plot_type <- type[1]
   time_unit <- unit[1]
 
   # Test to see if `ho` is user-separated
