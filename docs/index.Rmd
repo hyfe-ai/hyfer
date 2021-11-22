@@ -354,6 +354,23 @@ plot_cough_rate(ho_by_user, by_user=TRUE)
 ```
 
 
+### User trajectories
+
+To overlap users such that all of their timeseries begin at the origin, use `plot_trajectories()`.  This can be helpful when studying the evolution of cough in the days following enrollment or hospitalization, or studying user retention in the days since signing up with the app. Note that this function only accepts `hyfe` data that were processed with `by_user = TRUE`.   
+
+For each user separately:
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+plot_trajectory(ho, type='rate', unit = 'days')
+```
+
+For all user trajectories pooled together: 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+plot_trajectory(ho, type='coughs', unit = 'days', pool_users = TRUE)
+```
+
+
 ### Circadian patterns 
 
 For all users together: 
@@ -370,7 +387,6 @@ plot_circadian(ho_by_user, by_user=TRUE)
 
 
 ## Analytical tools 
-
 
 ### Summarize Hyfe data  
 

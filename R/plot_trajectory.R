@@ -1,0 +1,185 @@
+#' Plot Hyfe trajectory
+#'
+#' @param ho desc - only accepts by user
+#' @param type desc
+#' @param time_unit desc
+#' @param pool_users desc
+#' @param day_max desc
+#' @param print_plot desc
+#' @param return_plot desc
+#' @param return_data desc
+#' @param verbose desc
+#'
+#' @return
+#' @export
+#'
+plot_trajectory <- function(ho,
+                            type = c('coughs','sounds','sessions', 'rate'),
+                            unit = c('days','hours','weeks'),
+                            pool_users = FALSE,
+                            day_max = NULL,
+                            print_plot = TRUE,
+                            return_plot = FALSE,
+                            return_data = FALSE,
+                            verbose=TRUE){
+
+  if(FALSE){
+    # debugging only - not run
+    data(hyfe_data)
+    ho <- process_hyfe_data(hyfe_data, by_user = TRUE)
+
+    type <- 'sessions'
+    unit <- 'days'
+
+    day_max = NULL
+    pool_users = FALSE
+
+    # Try it
+    plot_trajectory(ho)
+
+    plot_trajectory(ho, type='sessions', unit = 'hours')
+    plot_trajectory(ho, type='sessions', unit = 'days')
+    plot_trajectory(ho, type='sessions', unit = 'days', pool_users = TRUE)
+    plot_trajectory(ho, type='sessions', unit = 'weeks')
+
+    plot_trajectory(ho, type='sounds', unit = 'hours')
+    plot_trajectory(ho, type='sounds', unit = 'days')
+    plot_trajectory(ho, type='sounds', unit = 'days', pool_users = TRUE)
+    plot_trajectory(ho, type='sounds', unit = 'weeks')
+
+    plot_trajectory(ho, type='coughs', unit = 'hours')
+    plot_trajectory(ho, type='coughs', unit = 'days')
+    plot_trajectory(ho, type='coughs', unit = 'days', pool_users = TRUE)
+    plot_trajectory(ho, type='coughs', unit = 'weeks')
+
+    plot_trajectory(ho, type='rate', unit = 'hours')
+    plot_trajectory(ho, type='rate', unit = 'days')
+    plot_trajectory(ho, type='rate', unit = 'days', pool_users = TRUE)
+    plot_trajectory(ho, type='rate', unit = 'weeks')
+  }
+
+
+  # Stage safe copies of datasets
+  hoi <- ho
+  plot_type <- type[1]
+  time_unit <- unit[1]
+
+  #i=1
+  #for(i in 1:length(hoi$user_summaries)){
+  #  useri <- hoi$user_summaries[[i]]
+  #  names(useri)
+  #  hoursi <- useri$hours
+  #}
+
+  hoi <- pool_user_data(hoi,
+                        group_users = FALSE,
+                        verbose=verbose)
+
+  names(hoi)
+  hoi$hours %>%  names
+
+
+
+
+  # Source dataset from correct time unit and variable type ====================
+
+  if(time_unit == 'hours'){
+    df <- hoi$hours
+    df$x <- df$study_hour
+    xlabel <- 'Hours since enrollment'
+    if(plot_type == 'sessions'){
+      df$y <- df$session_hours
+      ylabel <- 'Monitoring (person-hours)'
+    }
+  }
+
+  if(time_unit == 'days'){
+    df <- hoi$days
+    df$x <- df$study_day
+    xlabel <- 'Days since enrollment'
+    if(plot_type == 'sessions'){
+      df$y <- df$session_days
+      ylabel <- 'Monitoring (person-days)'
+    }
+  }
+
+  if(time_unit == 'weeks'){
+    df <- hoi$weeks
+    df$x <- df$study_week
+    xlabel <- 'Weeks since enrollment'
+    if(plot_type == 'sessions'){
+      df$y <- df$session_days/7
+      ylabel <- 'Monitoring (person-weeks)'
+    }
+  }
+
+  if(plot_type == 'sounds'){
+    df$y <- df$peaks
+    ylabel <- 'Explosive sounds (n)'
+    }
+
+  if(plot_type == 'coughs'){
+    df$y <- df$coughs
+    ylabel <- 'Cough detections (n)'
+  }
+
+  if(plot_type == 'rate'){
+    df$y <- df$cough_rate
+    ylabel <- 'Coughs per person-hour (n)'
+  }
+
+  # Simplify
+  df <- df %>% dplyr::select(x,y,session_hours,uid)
+
+  # Handle trajectory component
+  head(df)
+  new_df <- data.frame()
+  uids <- unique(df$uid)
+  i=1
+  for(i in 1:length(uids)){
+    uidi <- uids[i] ; uidi
+    dfi <- df[df$uid == uidi,]
+    dfi
+    t0 <- which(dfi$session_hours > 0.1)[1]
+    t0
+    dfi$x <- dfi$x - t0
+    dfi <- dfi[dfi$x >= 0,]
+    range(dfi$x)
+    new_df <- rbind(new_df, dfi)
+  }
+  df <- new_df
+
+  # Handle date filters
+  if(is.null(day_max)){day_max <- max(df$x)}
+
+  # Pool user data if specified
+  if(pool_users){
+    df <- df %>% dplyr::group_by(x) %>% dplyr::summarize(y=sum(y))
+  }
+
+  # Build plot =================================================================
+
+  if(pool_users){
+    p <-ggplot2::ggplot(df, ggplot2::aes(x=x, y=y)) +
+      ggplot2::theme(legend.text = ggplot2::element_text(size=4)) +
+      ggplot2::geom_area(alpha=.3,col='seagreen4',fill='seagreen4') +
+      ggplot2::geom_line(alpha=.5,lwd=.5,col='seagreen4')
+  }else{
+    p <-ggplot2::ggplot(df, ggplot2::aes(x=x, y=y, color=uid)) +
+      ggplot2::geom_line(alpha=.5)
+  }
+
+  # add labels & xlim
+  p <- p +
+    ggplot2::xlim(0,day_max) +
+    ggplot2::xlab(xlabel) +
+    ggplot2::ylab(ylabel)
+
+
+  # Return
+  return_list <- list()
+  if(return_plot){return_list$plot <- p}
+  if(return_data){return_list$data <- df}
+  if(print_plot){print(p)}
+  if(length(return_list)>0){return(return_list)}
+}
