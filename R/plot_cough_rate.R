@@ -1,7 +1,6 @@
-#' Plot Hyfe timeseries
+#' Plot Hyfe cough rate
 #'
 #' @param ho desc
-#' @param type desc
 #' @param time_unit desc
 #' @param date_min desc
 #' @param date_max desc
@@ -14,8 +13,7 @@
 #' @return
 #' @export
 #'
-plot_timeseries <- function(ho,
-                            type = c('coughs','sounds','sessions'),
+plot_cough_rate <- function(ho,
                             unit = c('days','hours','weeks'),
                             date_min = NULL,
                             date_max = NULL,
@@ -34,7 +32,6 @@ plot_timeseries <- function(ho,
     by_user <- FALSE
     by_user <- TRUE
 
-    type <- 'sessions'
     unit <- 'days'
 
     date_min = '2021-01-01 00:00:00'
@@ -44,22 +41,10 @@ plot_timeseries <- function(ho,
     date_max = NULL
 
     # Try it
-    plot_timeseries(ho)
-    plot_timeseries(ho_by_user, by_user = TRUE)
-
-    plot_timeseries(ho, type='sessions', unit = 'hours')
-    plot_timeseries(ho, type='sessions', unit = 'days')
-    plot_timeseries(ho, type='sessions', unit = 'weeks')
-
-    plot_timeseries(ho, type='sounds', unit = 'hours')
-    plot_timeseries(ho, type='sounds', unit = 'days')
-    plot_timeseries(ho_by_user, type='sounds', unit = 'days', by_user = TRUE)
-    plot_timeseries(ho, type='sounds', unit = 'weeks')
-
-    plot_timeseries(ho, type='coughs', unit = 'hours')
-    plot_timeseries(ho, type='coughs', unit = 'days')
-    plot_timeseries(ho_by_user, type='coughs', unit = 'days', by_user = TRUE)
-    plot_timeseries(ho, type='coughs', unit = 'weeks')
+    plot_cough_rate(ho)
+    plot_cough_rate(ho_by_user, by_user = TRUE)
+    plot_cough_rate(ho, unit = 'hours')
+    plot_cough_rate(ho, unit = 'weeks')
   }
 
 
@@ -80,44 +65,30 @@ plot_timeseries <- function(ho,
 
   # Source dataset from correct time unit and variable type ====================
 
-  names(hoi)
+  names(ho)
 
   if(time_unit == 'hours'){
     df <- hoi$hours
     df$x <- df$date_time
-    if(plot_type == 'sessions'){
-      df$y <- df$session_hours
-      ylabel <- 'Monitoring (person-hours)'
-    }
+    xwidth <- NULL
+    ylabel <- 'Coughs per person-hour'
   }
 
   if(time_unit == 'days'){
     df <- hoi$days
     df$x <- df$date
-    if(plot_type == 'sessions'){
-      df$y <- df$session_days
-      ylabel <- 'Monitoring (person-days)'
-    }
+    xwidth <- 1
+    ylabel <- 'Coughs per person-day'
   }
 
   if(time_unit == 'weeks'){
     df <- hoi$weeks
-    df$x <- df$date_floor %>% lubridate::as_datetime()
-    if(plot_type == 'sessions'){
-      df$y <- df$session_days/7
-      ylabel <- 'Monitoring (person-weeks)'
-    }
+    df$x <- df$date_floor %>% lubridate::as_datetime() #%>% as.character
+    xwidth <- NULL
+    ylabel <- 'Coughs per person-week'
   }
 
-  if(plot_type == 'sounds'){
-    df$y <- df$peaks
-    ylabel <- 'Explosive sounds (n)'
-    }
-
-  if(plot_type == 'coughs'){
-    df$y <- df$coughs
-    ylabel <- 'Cough detections (n)'
-  }
+  df$y <- df$cough_rate
 
   # Handle date filters ========================================================
 
@@ -149,14 +120,13 @@ plot_timeseries <- function(ho,
     # Pool all users
     if(by_user){message('Sorry, cannot plot by user -- `hyfe` object is an aggregation.')}
     p <-ggplot2::ggplot(df, ggplot2::aes(x=x, y=y)) +
-      ggplot2::geom_col(alpha=.5,fill='darkslategray')
+      ggplot2::geom_col(alpha=.5,fill='palevioletred4', width=xwidth)
   }
 
   # add labels
   p <- p +
     ggplot2::xlab(NULL) +
     ggplot2::ylab(ylabel)
-
 
   # Return
   return_list <- list()

@@ -1,4 +1,4 @@
-#' Plot Hyfe timeseries
+#' Plot Hyfe totals
 #'
 #' @param ho desc
 #' @param type desc
@@ -14,16 +14,15 @@
 #' @return
 #' @export
 #'
-plot_timeseries <- function(ho,
-                            type = c('coughs','sounds','sessions'),
-                            unit = c('days','hours','weeks'),
-                            date_min = NULL,
-                            date_max = NULL,
-                            by_user = FALSE,
-                            print_plot = TRUE,
-                            return_plot = FALSE,
-                            return_data = FALSE,
-                            verbose=TRUE){
+plot_circadian <- function(ho,
+                       type = c('coughs','sessions','sounds','rate'),
+                       date_min = NULL,
+                       date_max = NULL,
+                       by_user = FALSE,
+                       print_plot = TRUE,
+                       return_plot = FALSE,
+                       return_data = FALSE,
+                       verbose=TRUE){
 
   if(FALSE){
     # debugging only - not run
@@ -34,8 +33,7 @@ plot_timeseries <- function(ho,
     by_user <- FALSE
     by_user <- TRUE
 
-    type <- 'sessions'
-    unit <- 'days'
+    plot_type <- 'coughs'
 
     date_min = '2021-01-01 00:00:00'
     date_max = NULL
@@ -44,29 +42,18 @@ plot_timeseries <- function(ho,
     date_max = NULL
 
     # Try it
-    plot_timeseries(ho)
-    plot_timeseries(ho_by_user, by_user = TRUE)
-
-    plot_timeseries(ho, type='sessions', unit = 'hours')
-    plot_timeseries(ho, type='sessions', unit = 'days')
-    plot_timeseries(ho, type='sessions', unit = 'weeks')
-
-    plot_timeseries(ho, type='sounds', unit = 'hours')
-    plot_timeseries(ho, type='sounds', unit = 'days')
-    plot_timeseries(ho_by_user, type='sounds', unit = 'days', by_user = TRUE)
-    plot_timeseries(ho, type='sounds', unit = 'weeks')
-
-    plot_timeseries(ho, type='coughs', unit = 'hours')
-    plot_timeseries(ho, type='coughs', unit = 'days')
-    plot_timeseries(ho_by_user, type='coughs', unit = 'days', by_user = TRUE)
-    plot_timeseries(ho, type='coughs', unit = 'weeks')
+    plot_circadian(ho)
+    plot_circadian(ho_by_user, by_user = TRUE)
+    plot_circadian(ho, type = 'sessions')
+    plot_circadian(ho, type = 'sounds')
+    plot_circadian(ho, type = 'coughs')
+    plot_circadian(ho, type = 'rate')
   }
 
 
   # Stage safe copies of datasets
   hoi <- ho
   plot_type <- type[1]
-  time_unit <- unit[1]
 
   # Test to see if `ho` is user-separated
   this_by_user <- 'user_summaries' %in% names(hoi)
@@ -81,42 +68,45 @@ plot_timeseries <- function(ho,
   # Source dataset from correct time unit and variable type ====================
 
   names(hoi)
+  df <- hoi$hours
+  names(df)
+  if(this_by_user & by_user){
+    df_circ <-
+      df %>%
+      dplyr::group_by(uid, hour) %>%
+      dplyr::summarize(dplyr::across(session_seconds:coughs, sum)) %>%
+      dplyr::mutate(session_weeks = session_days / 7) %>%
+      dplyr::mutate(cough_rate = coughs / session_hours)
+  }else{
+    df_circ <-
+      df %>%
+      dplyr::group_by(hour) %>%
+      dplyr::summarize(dplyr::across(session_seconds:coughs, sum)) %>%
+      dplyr::mutate(session_weeks = session_days / 7) %>%
+      dplyr::mutate(cough_rate = coughs / session_hours)
+  }
+  df_circ
+  df <- df_circ %>% dplyr::arrange(hour)
+  df$x <- df$hour %>% as.factor
 
-  if(time_unit == 'hours'){
-    df <- hoi$hours
-    df$x <- df$date_time
-    if(plot_type == 'sessions'){
-      df$y <- df$session_hours
-      ylabel <- 'Monitoring (person-hours)'
-    }
+  if(plot_type=='sessions'){
+    df$y <- df$session_hours
+    ylabel <- 'Monitoring (person-hours)'
   }
 
-  if(time_unit == 'days'){
-    df <- hoi$days
-    df$x <- df$date
-    if(plot_type == 'sessions'){
-      df$y <- df$session_days
-      ylabel <- 'Monitoring (person-days)'
-    }
-  }
-
-  if(time_unit == 'weeks'){
-    df <- hoi$weeks
-    df$x <- df$date_floor %>% lubridate::as_datetime()
-    if(plot_type == 'sessions'){
-      df$y <- df$session_days/7
-      ylabel <- 'Monitoring (person-weeks)'
-    }
-  }
-
-  if(plot_type == 'sounds'){
+  if(plot_type=='sounds'){
     df$y <- df$peaks
     ylabel <- 'Explosive sounds (n)'
-    }
+  }
 
-  if(plot_type == 'coughs'){
+  if(plot_type=='coughs'){
     df$y <- df$coughs
     ylabel <- 'Cough detections (n)'
+  }
+
+  if(plot_type=='rate'){
+    df$y <- df$cough_rate
+    ylabel <- 'Coughs per person-hour'
   }
 
   # Handle date filters ========================================================
@@ -141,7 +131,6 @@ plot_timeseries <- function(ho,
   # Build plot =================================================================
 
   if(by_user & this_by_user){
-    # Keep users separate
     p <-ggplot2::ggplot(df, ggplot2::aes(x=x, y=y, color=uid)) +
       ggplot2::theme(legend.text = ggplot2::element_text(size=4)) +
       ggplot2::geom_point()
@@ -149,14 +138,13 @@ plot_timeseries <- function(ho,
     # Pool all users
     if(by_user){message('Sorry, cannot plot by user -- `hyfe` object is an aggregation.')}
     p <-ggplot2::ggplot(df, ggplot2::aes(x=x, y=y)) +
-      ggplot2::geom_col(alpha=.5,fill='darkslategray')
+      ggplot2::geom_col(alpha=.5,fill='sienna3')
   }
 
   # add labels
   p <- p +
-    ggplot2::xlab(NULL) +
+    ggplot2::xlab('Hour of day') +
     ggplot2::ylab(ylabel)
-
 
   # Return
   return_list <- list()

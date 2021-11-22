@@ -35,7 +35,7 @@ The following chunk of code shows you the whole game; use it as a template for s
 ```{r, echo=TRUE, eval=FALSE, include=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 # Install hyfer
 library(devtools) 
-devtools::install_github('hyfe-ai/hyfer', quiet=TRUE)
+devtools::install_github('hyfe-ai/hyfer', force=TRUE, quiet=TRUE)
 library(hyfer)
 
 # Other dependencies
@@ -351,25 +351,52 @@ plot_total(ho_by_user,unit='hours', type='coughs', by_user = TRUE)
 ```
 
 
-### Time series  
+### Time series of counts 
+
+For all users together: 
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
 plot_timeseries(ho)
 ```
 
+For each user separately:
+
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
-ho1 <- ho_by_user$user_summaries[[1]]
-ggplot(ho1$hours,aes(x=study_hour, y=cough_rate)) + geom_point(alpha=.3) +
-  labs(title='Hourly cough rate in user X') + ylab('Cough detections per hour')  
+plot_timeseries(ho_by_user, by_user=TRUE)
 ```
+
+This plotting function has the same optional inputs as `plot_total()`.  
+
+
+### Time series of cough rate
+
+For all users together: 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+plot_cough_rate(ho)
+```
+
+For each user separately:
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+plot_cough_rate(ho_by_user, by_user=TRUE)
+```
+
 
 ### Circadian patterns 
 
+For all users together: 
+
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
-ggplot(ho1$hours,aes(x=hour,y=cough_rate)) + geom_jitter(width=.3, alpha=.3) +
-  scale_x_continuous(breaks=0:23) + 
-  labs(title='Circadian pattern of cough in user X') + ylab('Cough detections per hour') 
+plot_circadian(ho)
 ```
+
+For each user separately:
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+plot_circadian(ho_by_user, by_user=TRUE)
+```
+
 
 ### Cough distributions   
 
@@ -377,6 +404,7 @@ ggplot(ho1$hours,aes(x=hour,y=cough_rate)) + geom_jitter(width=.3, alpha=.3) +
 ggplot(ho1$hours,aes(x=cough_rate)) + geom_histogram() + 
   labs(title='Hourly distribution of cough rate, user X') + xlab('Cough detections per hour') 
 ```
+
 
 
 ## Background functions in `hyfer` 
