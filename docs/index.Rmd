@@ -4,7 +4,7 @@ author: Eric Keen @ [Hyfe](https://www.hyfe.ai/)
 output: 
   rmarkdown::html_vignette:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
 vignette: >
   %\VignetteIndexEntry{hyfer_vignette}
   %\VignetteEngine{knitr::rmarkdown}
@@ -107,7 +107,7 @@ data(hyfe_data)
 This sample dataset contains Hyfe data for two "super-users" of the [Hyfe Cough Tracker app](https://www.hyfeapp.com/).  
 
 
-## Structure of `hyfe_data` 
+### Structure of a `hyfe_data` object
 
 All downloaded Hyfe data are provided in a standardized data format: a `hyfe_data` object. A `hyfe_data` object is simply a list with 6 standard slots. 
 
@@ -415,7 +415,7 @@ cough_rates <- cough_rate_distribution(ho_by_user,
                                        min_session = 0.5)
 ```
 
-This function can take both aggregated data (`ho`) and user-separated (`ho_by_user`), but it does best with the latter. It returns metrics about hourly cough rates based on an hour-by-hour analysis. The argument `min_session` allows you to define the minimum amount of monitoring required during a single hour in order for that hour to be included in the cough rate estimation. For example, sometimes an hour of day contains only a few minutes of monitoring for a user; that makes for a pretty poor estimate of that hour's cough rate. The default `min_session` is 0.5 hours, or 30 minutes of monitoring within an hour.  
+This function can take both aggregated data (`ho`) and user-separated (`ho_by_user`), but it does best with the latter. It returns metrics about hourly cough rates based on an hour-by-hour analysis. Similar to the inputs in `hyfe_summarize()`, the argument `min_session` allows you to define the minimum amount of monitoring required during a single hour in order for that hour to be included in the cough rate estimation. For example, sometimes an hour of day contains only a few minutes of monitoring for a user; that makes for a pretty poor estimate of that hour's cough rate. The default `min_session` is 0.5 hours, or 30 minutes of monitoring within an hour.  
 
 The function returns a list with four slots:  
 
@@ -469,7 +469,7 @@ ggplot(cough_rates$users,
 ```
 
 
-#### Cough bouts {#bouts}
+### Cough bouts {#bouts}
 
 The `cough_bouts()` function allows you to "pool" coughs that occur very close in time. This option can be useful in a medical context as well as in clinical validation experiments. 
 
@@ -491,7 +491,7 @@ coughs %>% nrow
 bouts %>% nrow
 ```
 
-Examine how many coughs were contaiend in these bouts:  
+Examine how many coughs were contained in these bouts:  
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 bouts$n_coughs %>% table 
@@ -652,13 +652,4 @@ hyfe_tables$days %>% as.data.frame %>% head
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
 hyfe_tables$weeks %>% as.data.frame %>% head
 ```
-
-
-## Upcoming improvements
-
-
-- `synchronize_hyfe_times()`  for synchronizing Hyfe data to a set of labels. 
-
-- Much, much more!  
-
 
