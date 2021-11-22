@@ -1,7 +1,10 @@
 ---
 title: "The `hyfer` package"
 author: Eric Keen @ [Hyfe](https://www.hyfe.ai/)
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{hyfer_vignette}
   %\VignetteEngine{knitr::rmarkdown}
@@ -248,38 +251,6 @@ The `user_summaries` slot is itself a list; each of its slots pertains to a sing
 ho_by_user$user_summaries[[1]] %>% names
 ```
 
-## Summarize Hyfe data  
-
-To get summary metrics for a `hyfe` object, use the function `hyfe_summarize()`:  
-
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-hyfe_summarize(ho)
-```
-
-Since the `ho` object was processed by aggregating all users together (note that the `users` slot in the output is `NULL`), the cough rates reported should be treated with caution: these rates are going to be biased by users with (1) a lot of monitoring time and (2) a lot of coughs.  
-
-To summarize Hyfe data from multiple users in a way that is truly balanced, in which each user is weighted equally, you should use a `hyfe` object processed with `by_user = TRUE`:  
-
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-hyfe_summarize(ho_by_user)
-```
-
-In the `users` slot of the output, you now you have a row summarizing each user. That user table is then used to build the `overall` slot.  The mean rates (i.e., `hourly_rate` and `daily_rate`) are the average of each user's mean rates, and -- importantly -- the variability metrics (`hourly_var`, `hourly_sd`, `daily_var`, `daily_sd`) now pertain to the variability *among* users.   
-
-The `hyfe_summarize()` function uses sample size cutoffs to ensure that rates are not swung to extremes due to insufficient monitoring. For example, an hour of day with 1 cough detection but only 1 minute of monitoring would produce an hourly cough rate estimate of 60 coughs per hour. Those scenarios should be avoided.  
-
-The default cutoffs are: at least 30 minutes of monitoring must occur within a hour-long window of the day in order for that hour to contribute to the estimation of the hourly cough rate; and at least 4 hours of monitoring must occur within a day in order for that day to count toward the daily cough rate.  
-
-You may adjust those defaults using the function arguments. For example, here is a much more stringent set of requirements, which may improve the accuracy of rate estimates but severely reduces sample size: 
-
-```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
-hyfe_summarize(ho_by_user,
-               cutoff_hourly = 59,
-               cutoff_daily = 23.9)
-```
-
-Note that the cumulative counts are unaffected by these cutoffs, only the rates.  
-
 
 ## Visualizing Hyfe data  
 
@@ -398,17 +369,44 @@ plot_circadian(ho_by_user, by_user=TRUE)
 ```
 
 
-### Cough distributions   
-
-```{r, echo=TRUE, eval=FALSE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
-ggplot(ho1$hours,aes(x=cough_rate)) + geom_histogram() + 
-  labs(title='Hourly distribution of cough rate, user X') + xlab('Cough detections per hour') 
-```
-
-
 ## Analytical tools 
 
-### Cough rate distributions (#distributions) 
+
+### Summarize Hyfe data  
+
+To get summary metrics for a `hyfe` object, use the function `hyfe_summarize()`:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_summarize(ho)
+```
+
+Since the `ho` object was processed by aggregating all users together (note that the `users` slot in the output is `NULL`), the cough rates reported should be treated with caution: these rates are going to be biased by users with (1) a lot of monitoring time and (2) a lot of coughs.  
+
+To summarize Hyfe data from multiple users in a way that is truly balanced, in which each user is weighted equally, you should use a `hyfe` object processed with `by_user = TRUE`:  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_summarize(ho_by_user)
+```
+
+In the `users` slot of the output, you now you have a row summarizing each user. That user table is then used to build the `overall` slot.  The mean rates (i.e., `hourly_rate` and `daily_rate`) are the average of each user's mean rates, and -- importantly -- the variability metrics (`hourly_var`, `hourly_sd`, `daily_var`, `daily_sd`) now pertain to the variability *among* users.   
+
+The `hyfe_summarize()` function uses sample size cutoffs to ensure that rates are not swung to extremes due to insufficient monitoring. For example, an hour of day with 1 cough detection but only 1 minute of monitoring would produce an hourly cough rate estimate of 60 coughs per hour. Those scenarios should be avoided.  
+
+The default cutoffs are: at least 30 minutes of monitoring must occur within a hour-long window of the day in order for that hour to contribute to the estimation of the hourly cough rate; and at least 4 hours of monitoring must occur within a day in order for that day to count toward the daily cough rate.  
+
+You may adjust those defaults using the function arguments. For example, here is a much more stringent set of requirements, which may improve the accuracy of rate estimates but severely reduces sample size: 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+hyfe_summarize(ho_by_user,
+               cutoff_hourly = 59,
+               cutoff_daily = 23.9)
+```
+
+Note that the cumulative counts are unaffected by these cutoffs, only the rates.  
+
+
+
+### Cough rate distributions {#distributions}
 
 To get details and summaries about the distribution of cough rates in your data, use the function `cough_rate_distribution()`.  
 
@@ -417,7 +415,7 @@ cough_rates <- cough_rate_distribution(ho_by_user,
                                        min_session = 0.5)
 ```
 
-This function can take both aggregated data (`ho`) and user-separated (`ho_by_user`), but it does best with the latter. It returns metrics about hourly cough rates based on hour-by-hour analysis of the data. The argument `min_session` allows you to define the minimum amount of monitoring required during a single hour in order for that hour to be included in the cough rate estimation. For example, sometimes an hour of day contains only a few minutes of monitoring for a user; that makes for a pretty poor estimate of that hour's cough rate. The default `min_session` is 0.5 hours, or 30 minutes of monitoring within an hour.  
+This function can take both aggregated data (`ho`) and user-separated (`ho_by_user`), but it does best with the latter. It returns metrics about hourly cough rates based on an hour-by-hour analysis. The argument `min_session` allows you to define the minimum amount of monitoring required during a single hour in order for that hour to be included in the cough rate estimation. For example, sometimes an hour of day contains only a few minutes of monitoring for a user; that makes for a pretty poor estimate of that hour's cough rate. The default `min_session` is 0.5 hours, or 30 minutes of monitoring within an hour.  
 
 The function returns a list with four slots:  
 
@@ -430,6 +428,8 @@ The slot `$overall` returns a one-row summary of the entire dataset:
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
 cough_rates$overall
 ```
+
+These metrics are based on the mean/variance for each individual user, i.e., `mean_of_mean` is the average of mean cough rates across users.  When using a `hyfe` object prepared with `by_user=TRUE`, this means that each user is weighted equally in the summary statistics.  When using a `hyfe` object in which all user data are aggregated together, users will be weighted according to their session time.  
 
 The slot `$users` returns a summary for every user contained in the data:  
 

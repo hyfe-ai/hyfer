@@ -54,7 +54,7 @@ cough_rate_distribution <- function(ho,
       hoursi %>%
       dplyr::mutate(uid = 'aggregate') %>%
       dplyr::filter(session_hours >= min_session) %>%
-      dplyr::select(uid, timestamp:session_hours, peaks, coughs, cough_rate)
+      dplyr::select(uid, timestamp:n_uid, session_hours:ough_rate)
   }
 
   hourlies
