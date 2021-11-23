@@ -11,6 +11,7 @@ plot_timeseries(
   date_min = NULL,
   date_max = NULL,
   by_user = FALSE,
+  running_mean = NULL,
   print_plot = TRUE,
   return_plot = FALSE,
   return_data = FALSE,
@@ -27,6 +28,8 @@ plot_timeseries(
 \item{date_max}{desc}
 
 \item{by_user}{desc}
+
+\item{running_mean}{desc}
 
 \item{print_plot}{desc}
 

@@ -352,7 +352,13 @@ For each user separately:
 plot_timeseries(ho_by_user, by_user=TRUE)
 ```
 
-This plotting function has the same optional inputs as `plot_total()`.  
+This plotting function has the same optional inputs as `plot_total()`, with the addition of an option for overlaying a running mean: 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+plot_timeseries(ho, type='coughs', unit = 'days', running_mean=7)
+```
+
+The units of the `running_mean` argument is the same as that of the `unit` argument. This option is only listened to when you process your `hyfe` data with `by_user=FALSE`.     
 
 
 ### Time series of cough rate
@@ -360,7 +366,7 @@ This plotting function has the same optional inputs as `plot_total()`.
 For all users together: 
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
-plot_cough_rate(ho)
+plot_cough_rate(ho, unit='days', running_mean = 14)
 ```
 
 For each user separately:

@@ -5,6 +5,7 @@
 #' @param date_min desc
 #' @param date_max desc
 #' @param by_user desc
+#' @param running_mean desc
 #' @param print_plot desc
 #' @param return_plot desc
 #' @param return_data desc
@@ -18,6 +19,7 @@ plot_cough_rate <- function(ho,
                             date_min = NULL,
                             date_max = NULL,
                             by_user = FALSE,
+                            running_mean = NULL,
                             print_plot = TRUE,
                             return_plot = FALSE,
                             return_data = FALSE,
@@ -40,10 +42,14 @@ plot_cough_rate <- function(ho,
     date_min = NULL
     date_max = NULL
 
+    running_mean <- NULL
+    #running_mean <- 7
+
     # Try it
     plot_cough_rate(ho)
     plot_cough_rate(ho_by_user, by_user = TRUE)
     plot_cough_rate(ho, unit = 'hours')
+    plot_cough_rate(ho, unit = 'days', running_mean=14)
     plot_cough_rate(ho, unit = 'weeks')
   }
 
@@ -118,8 +124,20 @@ plot_cough_rate <- function(ho,
   }else{
     # Pool all users
     if(by_user){message('Sorry, cannot plot by user -- `hyfe` object is an aggregation.')}
+
+    # Add running mean
+    if(!is.null(running_mean)){
+      df$rm <- add_running_mean(x = df$x, y = df$y, window = running_mean)$y
+    }
+
     p <-ggplot2::ggplot(df, ggplot2::aes(x=x, y=y)) +
       ggplot2::geom_col(alpha=.5,fill='palevioletred4', width=xwidth)
+
+    if(!is.null(running_mean)){
+      p <- p + ggplot2::geom_line(ggplot2::aes(x=x,y=rm),
+                                  lwd=1.25,alpha=.7,
+                                  col='palevioletred4')
+    }
   }
 
   # add labels

@@ -6,6 +6,7 @@
 #' @param date_min desc
 #' @param date_max desc
 #' @param by_user desc
+#' @param running_mean desc
 #' @param print_plot desc
 #' @param return_plot desc
 #' @param return_data desc
@@ -20,6 +21,7 @@ plot_timeseries <- function(ho,
                             date_min = NULL,
                             date_max = NULL,
                             by_user = FALSE,
+                            running_mean = NULL,
                             print_plot = TRUE,
                             return_plot = FALSE,
                             return_data = FALSE,
@@ -34,7 +36,10 @@ plot_timeseries <- function(ho,
     by_user <- FALSE
     by_user <- TRUE
 
-    type <- 'sessions'
+    running_mean <- NULL
+    #running_mean <- 7
+
+    type <- 'coughs'
     unit <- 'days'
 
     date_min = '2021-01-01 00:00:00'
@@ -53,11 +58,13 @@ plot_timeseries <- function(ho,
 
     plot_timeseries(ho, type='sounds', unit = 'hours')
     plot_timeseries(ho, type='sounds', unit = 'days')
+    plot_timeseries(ho, type='sounds', unit = 'days')
     plot_timeseries(ho_by_user, type='sounds', unit = 'days', by_user = TRUE)
     plot_timeseries(ho, type='sounds', unit = 'weeks')
 
     plot_timeseries(ho, type='coughs', unit = 'hours')
     plot_timeseries(ho, type='coughs', unit = 'days')
+    plot_timeseries(ho, type='coughs', unit = 'days', running_mean=7)
     plot_timeseries(ho_by_user, type='coughs', unit = 'days', by_user = TRUE)
     plot_timeseries(ho, type='coughs', unit = 'weeks')
   }
@@ -112,7 +119,7 @@ plot_timeseries <- function(ho,
   if(plot_type == 'sounds'){
     df$y <- df$peaks
     ylabel <- 'Explosive sounds (n)'
-    }
+  }
 
   if(plot_type == 'coughs'){
     df$y <- df$coughs
@@ -148,15 +155,26 @@ plot_timeseries <- function(ho,
   }else{
     # Pool all users
     if(by_user){message('Sorry, cannot plot by user -- `hyfe` object is an aggregation.')}
+
+    # Add running mean
+    if(!is.null(running_mean)){
+      df$rm <- add_running_mean(x = df$x, y = df$y, window = running_mean)$y
+    }
+
     p <-ggplot2::ggplot(df, ggplot2::aes(x=x, y=y)) +
       ggplot2::geom_col(alpha=.5,fill='darkslategray')
+
+    if(!is.null(running_mean)){
+      p <- p + ggplot2::geom_line(ggplot2::aes(x=x,y=rm),
+                                  lwd=1.25,alpha=.7,
+                                  col='darkslategray')
+    }
   }
 
   # add labels
   p <- p +
     ggplot2::xlab(NULL) +
     ggplot2::ylab(ylabel)
-
 
   # Return
   return_list <- list()
