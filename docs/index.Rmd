@@ -352,7 +352,7 @@ For each user separately:
 plot_timeseries(ho_by_user, by_user=TRUE)
 ```
 
-This plotting function has the same optional inputs as `plot_total()`, with the addition of an option for overlaying a running mean: 
+This plotting function has the same optional inputs as `plot_total()`, {#runningmean} with the addition of an option for overlaying a running mean: 
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
 plot_timeseries(ho, type='coughs', unit = 'days', running_mean=7)
