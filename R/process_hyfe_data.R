@@ -1,10 +1,21 @@
 #' Process a `hyfe_data` object for plotting/analysis
 #'
-#' @param hyfe_data A standard `hyfe_data` object.
+#' This function converts a raw `hyfe_data` object into a polished `hyfe` object.
+#' This function is usually the first step after downloading data.
+#'
+#' @param hyfe_data A standard `hyfe_data` object downloaded
+#' from the Research Dashboard (for external partners) or from `hyferdrive` (internal analysts).
+#' See full details and examples in the [package vignette](https://hyfe-ai.github.io/hyfer/#hyfedata).
 #' @param by_user Should data be processed in bulk, or for each user separately?
+#' Processing in bulk (`by_user = FALSE`, the default) can be quicker and makes summary plots easier
+#' (e.g., grand total monitoring hours across the cohort). Processing for each user separately (`by_user = TRUE`)
+#' can take more time at this stage, but opens up more possibilities for plotting and is necessary for unbiased metrics
+#' in which each user is given equal weight (e.g., mean cough rate across the cohort).
 #' @param verbose Print status updates?
 #'
-#' @return
+#' @return A `hyfe` object, which is a list with several named slots.
+#' See full details and examples in the [package vignette](https://hyfe-ai.github.io/hyfer/#hyfe_object).
+#'
 #' @export
 #'
 process_hyfe_data <- function(hyfe_data,

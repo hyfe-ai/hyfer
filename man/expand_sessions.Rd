@@ -17,7 +17,9 @@ expand_sessions(
 )
 }
 \arguments{
-\item{hyfe_data}{A hyfe_data object}
+\item{hyfe_data}{A standard \code{hyfe_data} object downloaded
+from the Research Dashboard (for external partners) or from \code{hyferdrive} (internal analysts).
+See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfedata}{package vignette}.}
 
 \item{unit}{Day, hour (not yet implemented)}
 

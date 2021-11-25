@@ -3,7 +3,10 @@
 \docType{data}
 \name{hyfe_data}
 \alias{hyfe_data}
-\title{Example of \code{hyfe_data} object}
+\title{Example of \code{hyfe_data} object
+A standard \code{hyfe_data} object downloaded
+from the Research Dashboard (for external partners) or from \code{hyferdrive} (internal analysts).
+See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfedata}{package vignette}.}
 \format{
 An object of class \code{list} of length 6.
 }
@@ -12,5 +15,8 @@ hyfe_data
 }
 \description{
 Example of \code{hyfe_data} object
+A standard \code{hyfe_data} object downloaded
+from the Research Dashboard (for external partners) or from \code{hyferdrive} (internal analysts).
+See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfedata}{package vignette}.
 }
 \keyword{datasets}

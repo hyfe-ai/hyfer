@@ -13,7 +13,9 @@ hyfe_timetables(
 )
 }
 \arguments{
-\item{hyfe_data}{A standard \code{hyfe_data} object.}
+\item{hyfe_data}{A standard \code{hyfe_data} object downloaded
+from the Research Dashboard (for external partners) or from \code{hyferdrive} (internal analysts).
+See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfedata}{package vignette}.}
 
 \item{tz}{desc}
 

@@ -1,6 +1,8 @@
 #' Produce summary tables of Hyfe data (hourly, daily, weekly)
 #'
-#' @param hyfe_data A standard `hyfe_data` object.
+#' @param hyfe_data A standard `hyfe_data` object downloaded
+#' from the Research Dashboard (for external partners) or from `hyferdrive` (internal analysts).
+#' See full details and examples in the [package vignette](https://hyfe-ai.github.io/hyfer/#hyfedata).
 #' @param tz desc
 #' @param timestamp_start If you want to specify the beginning of the time table, enter timestamp here.
 #' @param timestamp_stop Specify end of timetable, if you want.

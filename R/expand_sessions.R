@@ -4,7 +4,9 @@
 #' with time recorded on that date. This function handles the messiness of
 #' getting the amount of time recorded for a specific person on a specific day
 #' (since a session start on day 1 and ending on day 3 means that all of day 2 was recorded)
-#' @param hyfe_data A hyfe_data object
+#' @param hyfe_data A standard `hyfe_data` object downloaded
+#' from the Research Dashboard (for external partners) or from `hyferdrive` (internal analysts).
+#' See full details and examples in the [package vignette](https://hyfe-ai.github.io/hyfer/#hyfedata).
 #' @param unit Day, hour (not yet implemented)
 #' @param tz desc
 #' @param verbose Print status updates?
