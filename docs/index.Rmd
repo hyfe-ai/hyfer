@@ -107,7 +107,7 @@ data(hyfe_data)
 This sample dataset contains Hyfe data for two "super-users" of the [Hyfe Cough Tracker app](https://www.hyfeapp.com/).  
 
 
-### Structure of a `hyfe_data` object
+### Structure of a `hyfe_data` object {#hyfedata}
 
 All downloaded Hyfe data are provided in a standardized data format: a `hyfe_data` object. A `hyfe_data` object is simply a list with 6 standard slots. 
 
@@ -224,7 +224,7 @@ ho <- process_hyfe_data(hyfe_data_1)
 As explained above, the argument `uid` refers to the anonymous identifier assigns to each user.
 
 
-### Structure of a `hyfe` object  
+### Structure of a `hyfe` object {#hyfe_object}  
 
 Once a `hyfe_data` object is processed, it becomes a `hyfe` object. The structure and formatting of the `hyfe` object is designed to accommodate plotting and analysis.  
 

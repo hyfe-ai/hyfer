@@ -343,10 +343,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><a href="#setup">Setup</a><ul>
 <li><a href="#install-hyfer">Install <code>hyfer</code></a></li>
 <li><a href="#getting-hyfe-data">Getting Hyfe data</a></li>
-<li><a href="#structure-of-a-hyfe_data-object">Structure of a <code>hyfe_data</code> object</a></li>
+<li><a href="#hyfedata">Structure of a <code>hyfe_data</code> object</a></li>
 </ul></li>
 <li><a href="#processing-hyfe-data">Processing Hyfe data</a><ul>
-<li><a href="#structure-of-a-hyfe-object">Structure of a <code>hyfe</code> object</a></li>
+<li><a href="#hyfe_object">Structure of a <code>hyfe</code> object</a></li>
 </ul></li>
 <li><a href="#visualizing-hyfe-data">Visualizing Hyfe data</a><ul>
 <li><a href="#plots">Cumulative plots</a></li>
@@ -423,7 +423,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">data</span>(hyfe_data)</span></code></pre></div>
 <p>This sample dataset contains Hyfe data for two “super-users” of the <a href="https://www.hyfeapp.com/">Hyfe Cough Tracker app</a>.</p>
 </div>
-<div id="structure-of-a-hyfe_data-object" class="section level3">
+<div id="hyfedata" class="section level3">
 <h3>Structure of a <code>hyfe_data</code> object</h3>
 <p>All downloaded Hyfe data are provided in a standardized data format: a <code>hyfe_data</code> object. A <code>hyfe_data</code> object is simply a list with 6 standard slots.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">names</span>(hyfe_data)</span>
@@ -597,7 +597,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb13-8"><a href="#cb13-8"></a><span class="co"># Now process the data into a hyfe object</span></span>
 <span id="cb13-9"><a href="#cb13-9"></a>ho &lt;-<span class="st"> </span><span class="kw">process_hyfe_data</span>(hyfe_data_<span class="dv">1</span>)</span></code></pre></div>
 <p>As explained above, the argument <code>uid</code> refers to the anonymous identifier assigns to each user.</p>
-<div id="structure-of-a-hyfe-object" class="section level3">
+<div id="hyfe_object" class="section level3">
 <h3>Structure of a <code>hyfe</code> object</h3>
 <p>Once a <code>hyfe_data</code> object is processed, it becomes a <code>hyfe</code> object. The structure and formatting of the <code>hyfe</code> object is designed to accommodate plotting and analysis.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>ho <span class="op">%&gt;%</span><span class="st"> </span>names</span>
