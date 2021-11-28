@@ -74,7 +74,7 @@ plot_total <- function(ho,
   if(this_by_user){
     hoi <- pool_user_data(hoi,
                           group_users = !by_user,
-                          verbose=verbose)
+                          verbose=TRUE)
   }
 
   # Source dataset from correct time unit and variable type ====================
