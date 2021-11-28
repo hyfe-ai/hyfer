@@ -548,6 +548,7 @@ demo <- simulate_cougher(rate_mean = 3)
 This function return a dataframe with hourly cough counts based on the mean cough rate you provide: 
 
 ```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+par(mar=c(4.2,4.2,.5,.5))
 plot(coughs ~ date_time, data=demo, cex=.5, pch=16)
 ```
 
