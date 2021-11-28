@@ -537,6 +537,35 @@ ggplot(cough_rates$users,
   xlab('Mean cough rate (coughs per hour)') + ylab('Variance in cough rate')
 ```
 
+### Simulating coughs {#simulate}  
+
+To generate a fake timeseries of coughs, use the function `simulate_cougher()`.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+demo <- simulate_cougher(rate_mean = 3)
+```
+
+This function return a dataframe with hourly cough counts based on the mean cough rate you provide: 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+plot(coughs ~ date_time, data=demo, cex=.5, pch=16)
+```
+
+By default, this function returns a month-long timeseries of coughs simulated using a negative binomial distribution in which the variance is predicted based on the mean using a regression Hyfe has developed using a 600-participant dataset from northern Spain.  You can also specify your own variance using the `rate_variance` argument. (There are many other arguments as well -- see the function's documentation for more). 
+
+
+### Monitoring time requirements {#minimum_monitoring}
+
+For a visualize assessment of how much monitoring is needed in order to accurately estimate a user's overall mean cough rate, use the function `plot_cough_rate_error()`.  
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5}
+# Generate a cough time series
+demo <- simulate_cougher(rate_mean = 3, random_seed = 124)
+
+# Plot cough rate error
+demo_error <- plot_cough_rate_error(demo)
+```
+
 
 ### Cough bouts {#bouts}
 
