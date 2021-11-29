@@ -73,7 +73,7 @@ hyfe_summarize <- function(ho,
   if('user_summaries' %in% names(ho)){
     # ho by user
     users <- data.frame()
-    i=1
+    i=147
     for(i in 1:length(ho$user_summaries)){
       useri <- ho$user_summaries[[i]]
       names(useri)
@@ -81,10 +81,16 @@ hyfe_summarize <- function(ho,
                               cutoff_hourly = cutoff_hourly,
                               cutoff_daily = cutoff_daily)
       summi
-      summi <- data.frame(useri$id_key, summi)
+      idkey <- useri$id_key
+      if(nrow(idkey)==0){
+        idkey <- data.frame(uid=NA,name=NA,email=NA,alias=NA,cohort_id=NA)
+      }
+      summi <- data.frame(idkey, summi)
       users <- rbind(users, summi)
     }
     users
+    users <- users[!is.na(users$uid),]
+    nrow(users)
 
     overall <- data.frame(users = nrow(users),
                           seconds = sum(users$seconds),

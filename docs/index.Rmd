@@ -567,6 +567,27 @@ demo <- simulate_cougher(rate_mean = 3, random_seed = 124)
 demo_error <- plot_cough_rate_error(demo)
 ```
 
+### Fit a variance~mean regression model {#fit_model}
+
+For a cohort of users, you can use `fit_model_to_cough()` to fit a model of the relationship between the mean and variance of cough rate in a cohort of users. Knowing the relationship between mean and variance in cough rate allows you to simulate realistic time series for any cough rate.   
+
+To do this, you would need a `hyfe` object, processed with `by_user = TRUE`, with many users. Here is what your code would look like:
+
+```{r, echo=TRUE, eval=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
+fit_model_to_cough(ho_by_user,
+                   cutoff_hours = 50,
+                   cutoff_hourly = .5,
+                   toplot=TRUE)
+```
+
+See the function documentation to understand the details of these arguments and what is returned.  This function returns various details in a list (p-values, R-squared, model objects, etc.). For now, note that you can feed the model coefficients directly into another function, `predict_cough_variance()`, which returns a variance prediction based upon a user-specified cough rate and the model coefficients: 
+
+```{r, echo=TRUE, eval=FALSE, collapse=TRUE, warning=FALSE, message=FALSE}
+predict_cough_variance(cough_rate,
+                       b1,
+                       intercept)
+```
+
 
 ### Cough bouts {#bouts}
 
