@@ -4,7 +4,8 @@
 #'
 #' @param rate_mean Mean hourly cough rate
 #' @param rate_variance Variance in the hourly cough rate.
-#' If left `NULL`, variance will be estimated using a regression model.
+#' If left `NULL`, variance will be estimated using one of Hyfe's standard regression models,
+#' which should produce realistic results for any scenario.
 #' @param hours Duration of time series, in hours. Default is 720 (about a month).
 #' @param start_timestamp Optional start timestamp (seconds since midnight UTC
 #' on January 1, 1970). Default is to use your system's current time.
@@ -16,7 +17,8 @@
 #' @param random_seed Set the random number generator seed in order to replicate a cougher.
 #'
 #' @return A dataframe with a `timestamp` column, a `coughs` column, and a dummy `rec` column in which all rows have 1 full hour of "recording".
-#' If `format_time` is `TRUE`, additional date/time variables are provide.d See `format_hyfe_time()`.
+#' If `format_time` is `TRUE`, additional date/time variables are provided. See `format_hyfe_time()`
+#' or (this section of the vignette)[https://hyfe-ai.github.io/hyfer/#hyfetime].
 #'
 #' @export
 #'

@@ -19,7 +19,8 @@ simulate_cougher(
 \item{rate_mean}{Mean hourly cough rate}
 
 \item{rate_variance}{Variance in the hourly cough rate.
-If left \code{NULL}, variance will be estimated using a regression model.}
+If left \code{NULL}, variance will be estimated using one of Hyfe's standard regression models,
+which should produce realistic results for any scenario.}
 
 \item{hours}{Duration of time series, in hours. Default is 720 (about a month).}
 
@@ -38,7 +39,8 @@ It may be useful to change this to \code{FALSE} if conducting iterative analyses
 }
 \value{
 A dataframe with a \code{timestamp} column, a \code{coughs} column, and a dummy \code{rec} column in which all rows have 1 full hour of "recording".
-If \code{format_time} is \code{TRUE}, additional date/time variables are provide.d See \code{format_hyfe_time()}.
+If \code{format_time} is \code{TRUE}, additional date/time variables are provided. See \code{format_hyfe_time()}
+or (this section of the vignette)\link{https://hyfe-ai.github.io/hyfer/#hyfetime}.
 }
 \description{
 Simulate an hourly cough timeseries for an imaginary user.

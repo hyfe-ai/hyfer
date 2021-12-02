@@ -16,7 +16,9 @@ will pool coughs that occur within two seconds of each other into a single cough
 \item{verbose}{Print status updates?}
 }
 \value{
-
+A dataframe, analogous to the \code{coughs} dataframe (cough counts
+and rates along with many date/time variables),
+this time with counts and rates of bouts.
 }
 \description{
 Cough bouts

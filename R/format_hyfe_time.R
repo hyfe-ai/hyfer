@@ -1,6 +1,9 @@
 #' Format and create date/time variables
 #'
-#' Standard date/time variables for downstream Hyfe functions.
+#' Create a table of standard date/time variables for downstream Hyfe functions.
+#' This function is not usually called by an `R` users; it's a background function
+#' called by other `hyfer` utilities.
+#' But it can be handy if you have some timestamps that you want to format quickly.
 #'
 #' @param timestamps A numeric vector of integer timestamps.
 #' It is assumed that these timestamps represent seconds since 00:00:00 UTC on January 1, 1970,
@@ -8,7 +11,7 @@
 #' @param timezone  A character vector for the timezone, which must match one of the timezones listed in `OlsonNames()`.
 #' Most users will retrieve this timezone from `hyfe_data$cohort_settings$timezone`.
 #'
-#' @return A dataframe.
+#' @return A dataframe with various date/time variables. See details [here](https://hyfe-ai.github.io/hyfer/#hyfetime).
 #' @export
 #'
 #' @examples

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_cohort_diagnostic.R
 \name{plot_cohort_diagnostic}
 \alias{plot_cohort_diagnostic}
-\title{Plot diagnostic plot for a cohort}
+\title{Quick-and-ditry diagnostic plot for a cohort}
 \usage{
 plot_cohort_diagnostic(ho)
 }
@@ -12,8 +12,9 @@ This function only accepts \code{hyfe} objects that have been processed with \co
 See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfe_object}{package vignette}.}
 }
 \value{
-
+A plot with each user's data on a single vertical row.
+Grey dots represent monitoring activity, red dots indicate cough detections.
 }
 \description{
-Plot diagnostic plot for a cohort
+This can be useful in reviewing a cohort dataset or troubleshooting technical issues.
 }

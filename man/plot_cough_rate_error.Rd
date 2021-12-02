@@ -28,4 +28,8 @@ The \code{hours} dataframe with additional columns:
 }
 \description{
 How much monitoring is enough to estimate the overall cough rate accurately?
+This is a difficult question to answer, but this plot can help approximate it.
+It shows the cough rate estimate based on 1 hour of monitoring, 2 hours, 3 hours, ...,
+up until the entire cough record. The plot also displays the 'overall' cough rate, using the entire
+monitoring record, and horizontal lines indicating a range of acceptable error around the 'true' rate.
 }

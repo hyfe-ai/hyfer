@@ -2,18 +2,28 @@
 % Please edit documentation in R/filter_to_user.R
 \name{filter_to_user}
 \alias{filter_to_user}
-\title{Filter to user}
+\title{Filter \code{hyfe_data} object to a certain user(s).}
 \usage{
 filter_to_user(uid = NULL, hyfe_data)
 }
 \arguments{
-\item{uid}{desc}
+\item{uid}{The Firebase user IDs to filter to. If you are using other identifiers
+(e.g., research alias, email address, or username), use the \code{hyfe_data$id_key} dataframe
+to find the \code{uid}(s) you want to filter by. If \code{uid} is \code{NULL}, the default, a random \code{uid} will be chosen
+and the data will be filtered according to that random selection. This can be handy if you have an enormous
+\code{hyfe_data} object and just want to practice data processing / plotting without
+dealing with the enormous filesizes and processing times.}
 
-\item{hyfe_data}{desc}
+\item{hyfe_data}{A standard \code{hyfe_data} object downloaded
+from the Research Dashboard (for external partners) or from \code{hyferdrive} (internal analysts).
+See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfedata}{package vignette}.}
 }
 \value{
-
+A \code{hyfe_data} object containing only the data pertaining to the \code{uid}(s) you filtered by.
+Same data structure as a raw \code{hyfe_data} object.
 }
 \description{
-Filter to user
+If you want to work with data from only a single user (or subset of users)
+in a \code{hyfe_data} object containing data from multiple users,
+use this function before running \code{process_hyfe_data()}.
 }

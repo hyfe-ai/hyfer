@@ -21,19 +21,31 @@ expand_sessions(
 from the Research Dashboard (for external partners) or from \code{hyferdrive} (internal analysts).
 See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfedata}{package vignette}.}
 
-\item{unit}{Day, hour (not yet implemented)}
+\item{unit}{The time unit to use. If \code{hour} (default), a table will be created with
+one row for each hour of day; if \code{day}, each row will represent a single date.}
 
-\item{tz}{desc}
+\item{tz}{If \code{NULL} (the default), this function will look within the \code{cohort_settings} slot of the
+\code{hyfe_data} object for the timezone to use. If not found there, the assumption will be \code{UTC}.}
 
 \item{verbose}{Print status updates?}
 }
 \value{
 A list with \code{timetable} (a dataframe with one row per person-date or person-hour)
-and \code{series} (a dataframe in which each row is a timestamp, and each column is a UID)
+and \code{series} (a dataframe in which each row is a timestamp, and each column is a UID).
+By default, series is returned as a NULL object since it is usually only needed
+for troubleshooting and can be time-consuming to prepare.
+
+@export
 }
 \description{
-Expand a sessions dataframe (one row per session) into a dataframe with one row per person-date,
+Expand a \code{sessions} dataframe (one row per session) into a dataframe with one row per person-date,
 with time recorded on that date. This function handles the messiness of
 getting the amount of time recorded for a specific person on a specific day
 (since a session start on day 1 and ending on day 3 means that all of day 2 was recorded)
+}
+\details{
+Most analyses of Hyfe data hinge upon detailed knowledge of when
+Hyfe was actively listening for coughs, and when it wasn’t.
+To determine the duration of monitoring on an hourly or daily basis,
+use the \code{expand_sessions()} function.
 }

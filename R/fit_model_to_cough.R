@@ -25,9 +25,11 @@ fit_cough_model <- function(ho,
   # for debugging only -- not run!
   if(FALSE){
     library(hyferdrive)
-    hd <- get_cohort_data('jhu', fast=TRUE, verbose=TRUE)
     library(hyfer)
+    hd <- get_cohort_data('jhu', fast=TRUE, verbose=TRUE)
     ho <- process_hyfe_data(hd,by_user=TRUE,verbose=TRUE)
+    ho_lm <- fit_cough_model(ho)
+    names(ho_lm)
 
     cutoff_hours = 30
     cutoff_hourly = 30

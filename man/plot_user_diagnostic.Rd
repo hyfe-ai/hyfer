@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_user_diagnostic.R
 \name{plot_user_diagnostic}
 \alias{plot_user_diagnostic}
-\title{Plot diagnostic plot for a single user}
+\title{A quick-and-dirty diagnostic plot for a single user}
 \usage{
 plot_user_diagnostic(ho)
 }
@@ -11,8 +11,9 @@ plot_user_diagnostic(ho)
 See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfe_object}{package vignette}.}
 }
 \value{
-
+A plot with the user's data plotted with date on the y axis and time of day on the x axis.
+Grey dots represent monitoring activity, red dots indicate cough detections.
 }
 \description{
-Plot diagnostic plot for a single user
+This can be useful in reviewing a user's Hyfe record or troubleshooting technical issues.
 }

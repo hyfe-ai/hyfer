@@ -21,25 +21,29 @@ plot_trajectory(
 This function only accepts \code{hyfe} objects that have been processed with \code{ by_user = TRUE}.
 See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfe_object}{package vignette}.}
 
-\item{type}{desc}
+\item{type}{The variable to plot.}
 
-\item{pool_users}{desc}
+\item{pool_users}{If \code{TRUE}, all user data will be pooled together into a single cumulative line.}
 
-\item{day_max}{desc}
+\item{day_max}{Option to control the extent of the X axis. In a trajectory plot, the minimum of the X axis will always be zero.}
 
-\item{print_plot}{desc}
+\item{print_plot}{If \code{TRUE} (the default), the plot will be printed for you.}
 
-\item{return_plot}{desc}
+\item{return_plot}{If \code{TRUE} (\emph{not} the default), the \code{ggplot} plot object will be returned.
+This can be useful if you want to modify/add to the plot (e.g., change axis titles, add a plot title, etc.).}
 
-\item{return_data}{desc}
+\item{return_data}{If \code{TRUE} (\emph{not} the default), a simple dataframe will be returned
+that provides you with the exact values used to produce the plot.}
 
-\item{verbose}{desc}
+\item{verbose}{Print status updates?}
 
-\item{time_unit}{desc}
+\item{time_unit}{The time unit by which to plot it.}
 }
 \value{
 
 }
 \description{
-Plot Hyfe trajectory
+In this plot, all users are plotted with the start of their monitoring period beginning at the plot's origin.
+This type of plot could be useful if you want to examine patterns across users, such as retention in using the app
+or the evoution of cough during a COVID-19 diagnosis.
 }

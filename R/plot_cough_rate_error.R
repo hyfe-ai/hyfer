@@ -1,6 +1,10 @@
 #' Plot cough rate error as a function of monitoring time.
 #'
 #' How much monitoring is enough to estimate the overall cough rate accurately?
+#' This is a difficult question to answer, but this plot can help approximate it.
+#' It shows the cough rate estimate based on 1 hour of monitoring, 2 hours, 3 hours, ...,
+#' up until the entire cough record. The plot also displays the 'overall' cough rate, using the entire
+#' monitoring record, and horizontal lines indicating a range of acceptable error around the 'true' rate.
 #'
 #' @param hours A dataframe of hourly cough counts. Minimum requirements:
 #' A column `coughs` with coughs counted in each hour,

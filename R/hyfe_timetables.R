@@ -1,14 +1,19 @@
 #' Produce summary tables of Hyfe data (hourly, daily, weekly)
 #'
+#' This is a background utility function not usually used by analysts directly.
+#'
 #' @param hyfe_data A standard `hyfe_data` object downloaded
 #' from the Research Dashboard (for external partners) or from `hyferdrive` (internal analysts).
 #' See full details and examples in the [package vignette](https://hyfe-ai.github.io/hyfer/#hyfedata).
-#' @param tz desc
+#' @param tz If `NULL` (the default), this function will look within the `cohort_settings` slot of the
+#' `hyfe_data` object for the timezone to use. If not found there, the assumption will be `UTC`.
 #' @param timestamp_start If you want to specify the beginning of the time table, enter timestamp here.
 #' @param timestamp_stop Specify end of timetable, if you want.
 #' @param verbose Print status updates?
 #'
-#' @return
+#' @return A list of tables summarizing monitoring/cough data into timeseries with the units `hours`, `days`, and `weeks`.
+#' See [the vignette for full details)[https://hyfe-ai.github.io/hyfer/#timetables]. Note that this function lumps all users together.
+#'
 #' @export
 #'
 hyfe_timetables <- function(hyfe_data,

@@ -1,18 +1,30 @@
 #' Expand sessions
 #'
-#' Expand a sessions dataframe (one row per session) into a dataframe with one row per person-date,
+#' Expand a `sessions` dataframe (one row per session) into a dataframe with one row per person-date,
 #' with time recorded on that date. This function handles the messiness of
 #' getting the amount of time recorded for a specific person on a specific day
 #' (since a session start on day 1 and ending on day 3 means that all of day 2 was recorded)
+#'
 #' @param hyfe_data A standard `hyfe_data` object downloaded
 #' from the Research Dashboard (for external partners) or from `hyferdrive` (internal analysts).
 #' See full details and examples in the [package vignette](https://hyfe-ai.github.io/hyfer/#hyfedata).
-#' @param unit Day, hour (not yet implemented)
-#' @param tz desc
+#' @param unit The time unit to use. If `hour` (default), a table will be created with
+#' one row for each hour of day; if `day`, each row will represent a single date.
+#' @param tz If `NULL` (the default), this function will look within the `cohort_settings` slot of the
+#' `hyfe_data` object for the timezone to use. If not found there, the assumption will be `UTC`.
 #' @param verbose Print status updates?
+#'
+#' @details Most analyses of Hyfe data hinge upon detailed knowledge of when
+#' Hyfe was actively listening for coughs, and when it wasn’t.
+#' To determine the duration of monitoring on an hourly or daily basis,
+#' use the `expand_sessions()` function.
+#'
 #' @return A list with `timetable` (a dataframe with one row per person-date or person-hour)
-#' and `series` (a dataframe in which each row is a timestamp, and each column is a UID)
-#' @export
+#' and `series` (a dataframe in which each row is a timestamp, and each column is a UID).
+#' By default, series is returned as a NULL object since it is usually only needed
+#' for troubleshooting and can be time-consuming to prepare.
+#'
+#'  @export
 #'
 expand_sessions <- function(hyfe_data,
                             unit = 'hour',

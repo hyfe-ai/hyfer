@@ -14,10 +14,13 @@ It is assumed that these timestamps represent seconds since 00:00:00 UTC on Janu
 Most users will retrieve this timezone from \code{hyfe_data$cohort_settings$timezone}.}
 }
 \value{
-A dataframe.
+A dataframe with various date/time variables. See details \href{https://hyfe-ai.github.io/hyfer/#hyfetime}{here}.
 }
 \description{
-Standard date/time variables for downstream Hyfe functions.
+Create a table of standard date/time variables for downstream Hyfe functions.
+This function is not usually called by an \code{R} users; it's a background function
+called by other \code{hyfer} utilities.
+But it can be handy if you have some timestamps that you want to format quickly.
 }
 \examples{
 format_hyfe_time(1626851363)

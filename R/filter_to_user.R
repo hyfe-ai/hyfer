@@ -1,9 +1,23 @@
-#' Filter to user
+#' Filter `hyfe_data` object to a certain user(s).
 #'
-#' @param uid desc
-#' @param hyfe_data desc
+#' If you want to work with data from only a single user (or subset of users)
+#' in a `hyfe_data` object containing data from multiple users,
+#' use this function before running `process_hyfe_data()`.
 #'
-#' @return
+#' @param uid The Firebase user IDs to filter to. If you are using other identifiers
+#' (e.g., research alias, email address, or username), use the `hyfe_data$id_key` dataframe
+#' to find the `uid`(s) you want to filter by. If `uid` is `NULL`, the default, a random `uid` will be chosen
+#' and the data will be filtered according to that random selection. This can be handy if you have an enormous
+#' `hyfe_data` object and just want to practice data processing / plotting without
+#' dealing with the enormous filesizes and processing times.
+#'
+#' @param hyfe_data A standard `hyfe_data` object downloaded
+#' from the Research Dashboard (for external partners) or from `hyferdrive` (internal analysts).
+#' See full details and examples in the [package vignette](https://hyfe-ai.github.io/hyfer/#hyfedata).
+#'
+#' @return A `hyfe_data` object containing only the data pertaining to the `uid`(s) you filtered by.
+#' Same data structure as a raw `hyfe_data` object.
+#'
 #' @export
 #'
 filter_to_user <- function(uid=NULL,

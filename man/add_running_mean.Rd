@@ -7,14 +7,15 @@
 add_running_mean(x, y, window)
 }
 \arguments{
-\item{x}{desc}
+\item{x}{A numeric vector, representing the time variable (e.g., hours, days, or timestamps).}
 
-\item{y}{desc}
+\item{y}{A numeric vector of the same length as \code{x},
+representing the values to which the running mean will be applied.}
 
-\item{window}{Window size of running mean, in number of values}
+\item{window}{Window size of running mean, in number of values of \code{x} to average together.}
 }
 \value{
-
+A dataframe with two variables: \code{x} = the middle of the time window; \code{y} = the average value of \code{y} within that time window.
 }
 \description{
 Running mean for a Hyfe metric

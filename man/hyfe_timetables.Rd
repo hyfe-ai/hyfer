@@ -17,7 +17,8 @@ hyfe_timetables(
 from the Research Dashboard (for external partners) or from \code{hyferdrive} (internal analysts).
 See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfedata}{package vignette}.}
 
-\item{tz}{desc}
+\item{tz}{If \code{NULL} (the default), this function will look within the \code{cohort_settings} slot of the
+\code{hyfe_data} object for the timezone to use. If not found there, the assumption will be \code{UTC}.}
 
 \item{timestamp_start}{If you want to specify the beginning of the time table, enter timestamp here.}
 
@@ -26,8 +27,9 @@ See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfe
 \item{verbose}{Print status updates?}
 }
 \value{
-
+A list of tables summarizing monitoring/cough data into timeseries with the units \code{hours}, \code{days}, and \code{weeks}.
+See [the vignette for full details)\link{https://hyfe-ai.github.io/hyfer/#timetables}. Note that this function lumps all users together.
 }
 \description{
-Produce summary tables of Hyfe data (hourly, daily, weekly)
+This is a background utility function not usually used by analysts directly.
 }

@@ -11,13 +11,21 @@ pool_user_data(ho_by_user, group_users = TRUE, verbose = TRUE)
 This function only accepts \code{hyfe} objects processed with \code{by_user = TRUE}.
 See full details and examples in the \href{https://hyfe-ai.github.io/hyfer/#hyfe_object}{package vignette}.}
 
-\item{group_users}{desc}
+\item{group_users}{If \code{TRUE} (the default), the timetables produced will pool all users together,
+as implied by the function's name. For example, the \code{hours} output will have a single row for each hour in the monitoring period.
+If \code{FALSE}, the \code{hours} table will have a row for each \emph{user-hour}, with a column \code{uid} containing the Firebase UID for the user.
+This option is not often useful, but it may be for certain analyses.}
 
 \item{verbose}{Print status updates?}
 }
 \value{
-
+A list with the three timetable slots you expect in a \code{hyfe} object in which all
+users are pooled together: \code{hours}, \code{days}, and \code{weeks}. See the
+\href{https://hyfe-ai.github.io/hyfer/#timetables}{vignette} for details on these tables.
 }
 \description{
-Pool user data
+This is a background function that is rarely called by analysts directly.
+It takes a \code{hyfe} object created by a call to \code{process_hyfe_data()} in which the
+argument \code{by_user} was set to \code{TRUE} such that each user's data was proessed separately,
+and pools all the user data together. It main application is for certain plotting functions.
 }

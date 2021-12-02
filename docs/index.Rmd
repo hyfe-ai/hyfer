@@ -25,7 +25,7 @@ The `hyfer` package provides utilities for interacting with data collected by Hy
 
 ## `hyfer` in a nutshell 
 
-Put simply, `hyfer` processes raw Hyfe data -- which you downloaded in a standard format referred to as a **`hyfe_data`** object -- into a polished format for tables and plots. We refer to that post-processed, analysis-ready data as a **`hyfe`** object.  
+Put simply, `hyfer` processes raw Hyfe data -- which you downloaded in a standard format referred to as a **`hyfe_data`** object -- into a polished format for tables and plots. We refer to that post-processed, analysis-ready data simply as a **`hyfe`** object.  
 
 &nbsp;  
 <center>
@@ -757,7 +757,7 @@ lines(x = hyfe_time$series$timestamp,
 ```
 
 
-#### `hyfe_timetables()`  
+#### `hyfe_timetables()` {#timetables}  
 
 To create hourly/daily/weekly summaries of session activity, peak/cough detections, and cough rates, use the function `hyfe_summary_tables()`.  
 

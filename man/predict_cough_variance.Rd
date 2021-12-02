@@ -4,7 +4,7 @@
 \alias{predict_cough_variance}
 \title{Predict cough variance based on mean-variance regression model}
 \usage{
-predict_cough_variance(cough_rate, b1, intercept)
+predict_cough_variance(cough_rate, b1 = 1.339539, intercept = 1.90719)
 }
 \arguments{
 \item{cough_rate}{The mean cough rate (coughs per hour) for which you want to
@@ -18,6 +18,8 @@ predict the variance.}
 The predicted variance.
 }
 \description{
-Format of the regression model: (format: variance = exp( b1 *log(mean) +  intercept )).
-You can generate these coefficients using the function \code{fit_model_to_cough()}.
+The format of the regression model used is: \code{variance = exp( b1 *log(mean) +  intercept )}.
+You can make up the coefficients \code{b1} and \code{intercept} yourself, or generate them
+using the function \code{fit_model_to_cough()}. The default values come from a large Hyfe study in northern Spain,
+and should produce realistic variance values.
 }

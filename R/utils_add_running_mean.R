@@ -1,10 +1,12 @@
 #' Running mean for a Hyfe metric
 #'
-#' @param x desc
-#' @param y desc
-#' @param window Window size of running mean, in number of values
+#' @param x A numeric vector, representing the time variable (e.g., hours, days, or timestamps).
+#' @param y A numeric vector of the same length as `x`,
+#' representing the values to which the running mean will be applied.
+#' @param window Window size of running mean, in number of values of `x` to average together.
 #'
-#' @return
+#' @return A dataframe with two variables: `x` = the middle of the time window; `y` = the average value of `y` within that time window.
+#'
 #' @export
 #'
 add_running_mean <- function(x,

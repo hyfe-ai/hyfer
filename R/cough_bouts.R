@@ -6,7 +6,9 @@
 #' will pool coughs that occur within two seconds of each other into a single cough bout.
 #' @param verbose  Print status updates?
 #'
-#' @return
+#' @return A dataframe, analogous to the `coughs` dataframe (cough counts
+#' and rates along with many date/time variables),
+#' this time with counts and rates of bouts.
 #' @export
 #'
 cough_bouts <- function(coughs,
