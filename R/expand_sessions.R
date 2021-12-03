@@ -24,7 +24,7 @@
 #' By default, series is returned as a NULL object since it is usually only needed
 #' for troubleshooting and can be time-consuming to prepare.
 #'
-#'  @export
+#' @export
 #'
 expand_sessions <- function(hyfe_data,
                             unit = 'hour',

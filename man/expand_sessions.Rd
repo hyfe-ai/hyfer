@@ -34,8 +34,6 @@ A list with \code{timetable} (a dataframe with one row per person-date or person
 and \code{series} (a dataframe in which each row is a timestamp, and each column is a UID).
 By default, series is returned as a NULL object since it is usually only needed
 for troubleshooting and can be time-consuming to prepare.
-
-@export
 }
 \description{
 Expand a \code{sessions} dataframe (one row per session) into a dataframe with one row per person-date,
