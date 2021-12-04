@@ -619,6 +619,68 @@ bouts$n_coughs %>% table
 
 Most bouts contain a single cough, but some contained two or three, and a few contained more than that. 
 
+### Evaluate Hyfe performance {#performance}  
+
+#### Synchronize detections & labels  
+
+Comparing Hyfe performance to a groundtruth, such as a set of labeled detections, requires that the two sets of events are synchronized. Even if Hyfe's system time differs from the labeler's clock by a second or two, that offset can complicate
+and confuse the performance evaluation process. Use the function `synchronize()` to find the offset correction needed for Hyfe detections to be synchronized to a set of reference/label times.
+
+```{r, echo=FALSE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+# Fabricate reference_times
+start_time <- Sys.time() %>%  as.numeric %>%  round
+set.seed(123)
+intervals <- sample(5:15,size=50,replace=TRUE)
+int_cum <- cumsum(intervals)
+reference_times <- start_time + int_cum
+reference_times
+
+# Labels
+set.seed(123)
+reference_labels <- sample(1:3,size=length(reference_times),replace=TRUE)
+reference_labels
+
+reference <- data.frame(times=reference_times,
+                        labels = reference_labels)
+
+# Hyfe_times
+major_offset <- 3600 * 7 # time zone issue
+minor_offset <- -27 # hyfe is 27 seconds behind reference times
+hyfe_times <- reference_times + major_offset + minor_offset
+
+# Hyfe labels
+hyfe_predictions <- rep(FALSE,length(reference_times))
+hyfe_predictions[reference_labels == 3] <- TRUE
+hyfe_predictions[reference_labels == 2] <- sample(c(FALSE,TRUE),size=length(reference_labels[reference_labels == 2]), replace=TRUE)
+hyfe_predictions[reference_labels == 1] <- sample(c(FALSE,TRUE),size=length(reference_labels[reference_labels == 1]), replace=TRUE)
+hyfe_predictions
+
+detections <- data.frame(times=hyfe_times,
+                         predictions = hyfe_predictions)
+```
+
+Say you did a "field test" in which you coughed into a MP3 recorder and a Hyfe phone a few dozen times and you want to see how well Hyfe performed at detecting all of those coughs. A friend reviews the MP3 file and labels each sound according to Hyfe 4-tier labeling system. Your table of labels looks like this: 
+
+```{r, echo=FALSE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+reference %>%  head
+```
+
+You download your Hyfe data and use the `ho$sounds` slot to find the timestamp and prediction for the sounds in your test. A simplified table of your detections may look like this:  
+
+```{r, echo=FALSE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE}
+detections %>%  head
+```
+
+Let's synchronize these detections to your labels. (These are fake data that we generated for this example. The true time offset is 6 hours, 59 minutes, and 33 seconds ahead of the labels, or a total of 25173 seconds). The function should return the same offset: 
+
+```{r, echo=TRUE, eval=TRUE, collapse=TRUE, warning=FALSE, message=FALSE, fig.width=6.5, fig.height=8}
+synchronize(reference_times = reference$times,
+            reference_labels = reference$labels,
+            hyfe_times = detections$times,
+            hyfe_predictions = detections$predictions)
+```
+
+The offset is negative because, when you add this number to the Hyfe detection timestamps, they will match the label timestamps.  
 
 
 ## Background functions in `hyfer` 
