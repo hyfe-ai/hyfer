@@ -4,7 +4,7 @@
 #' in a `hyfe_data` object containing data from multiple users,
 #' use this function before running `process_hyfe_data()`.
 #'
-#' @param uid The Firebase user IDs to filter to. If you are using other identifiers
+#' @param uid_filter The Firebase user IDs to filter to. If you are using other identifiers
 #' (e.g., research alias, email address, or username), use the `hyfe_data$id_key` dataframe
 #' to find the `uid`(s) you want to filter by. If `uid` is `NULL`, the default, a random `uid` will be chosen
 #' and the data will be filtered according to that random selection. This can be handy if you have an enormous
@@ -20,17 +20,16 @@
 #'
 #' @export
 #'
-filter_to_user <- function(uid=NULL,
+filter_to_user <- function(uid_filter=NULL,
                            hyfe_data){
 
   if(FALSE){
-    uid <- '9D7SChvklVa7zya0LdU6YVOi9QV2'
+    uid_filter <- '9D7SChvklVa7zya0LdU6YVOi9QV2'
+    #uid_filter <- uids
     data(hyfe_data)
   }
 
-  if(is.null(uid)){uid <- sample(hyfe_data$id_key,1)}
-
-  uid_filter <- uid
+  if(is.null(uid_filter)){uid_filter <- sample(hyfe_data$id_key,1)}
 
   uid_data <- lapply(hyfe_data,function(x){
     if(!is.null(x)){

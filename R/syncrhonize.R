@@ -115,7 +115,7 @@ synchronize <- function(reference_times,
     # Time zone sync (really, half hour resolution)
 
     if(toplot){par(mfrow=c(3,1))}
-    if(verbose){message('--- calculating time zone offset . . .')}
+    if(verbose){message('--- --- calculating time zone offset ...')}
     tz_offset <- find_time_offset(reference_times,
                                   hyfe_times,
                                   offset_step = 1800,
@@ -128,7 +128,7 @@ synchronize <- function(reference_times,
     #=============================================================================
     # Minute-scale sync
 
-    if(verbose){message('--- calculating minutes offset . . .')}
+    if(verbose){message('--- --- calculating minutes offset ...')}
 
     minutes_offset <- find_time_offset(reference_times,
                                   hyfe_times_tz,
@@ -142,7 +142,7 @@ synchronize <- function(reference_times,
     #=============================================================================
     # Second-scale sync
 
-    if(verbose){message('--- calculating seconds offset . . .')}
+    if(verbose){message('--- --- calculating seconds offset ...')}
 
     seconds_offset <- find_time_offset(reference_times,
                                        hyfe_times_minutes,
