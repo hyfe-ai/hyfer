@@ -4,10 +4,10 @@
 \alias{filter_to_user}
 \title{Filter \code{hyfe_data} object to a certain user(s).}
 \usage{
-filter_to_user(uid = NULL, hyfe_data)
+filter_to_user(uid_filter = NULL, hyfe_data)
 }
 \arguments{
-\item{uid}{The Firebase user IDs to filter to. If you are using other identifiers
+\item{uid_filter}{The Firebase user IDs to filter to. If you are using other identifiers
 (e.g., research alias, email address, or username), use the \code{hyfe_data$id_key} dataframe
 to find the \code{uid}(s) you want to filter by. If \code{uid} is \code{NULL}, the default, a random \code{uid} will be chosen
 and the data will be filtered according to that random selection. This can be handy if you have an enormous

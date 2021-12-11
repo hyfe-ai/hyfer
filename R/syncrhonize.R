@@ -53,7 +53,7 @@ synchronize <- function(reference_times,
 
     toplot = TRUE
     verbose = TRUE
-    filter_to_3 = TRUE
+    filter_to_3 = FALSE
 
     # Fabricate reference_times
     start_time <- Sys.time() %>%  as.numeric %>%  round
@@ -112,14 +112,42 @@ synchronize <- function(reference_times,
   }else{
 
     #=============================================================================
+
+    reference_times
+    hyfe_times
+    max_diff <- 10000
+    offsets <- -max_diff:max_diff
+    ts <- offsets[1]
+    mse <- sapply(offsets,function(ts){
+      x <- reference_times
+      y <- hyfe_times + ts
+      xy <- sapply(x,function(xy){
+        y[which.min(abs(xy - y))]
+      })
+      mse <- sum((xy - x)^2) / length(x)
+      mse
+    })
+
+    plot(log(mse) ~ offsets, type='l')
+    which.min(mse)
+    offsets[which.min(mse)]
+
+    #
+
+
+
+
+
+    #=============================================================================
     # Time zone sync (really, half hour resolution)
 
     if(toplot){par(mfrow=c(3,1))}
     if(verbose){message('--- --- calculating time zone offset ...')}
     tz_offset <- find_time_offset(reference_times,
                                   hyfe_times,
-                                  offset_step = 1800,
-                                  offset_range = c(-86400, 86400),
+                                  offset_step = 225,
+                                  offset_range = c(-43200, 43200),
+                                  #offset_range = c(-86400, 86400),
                                   plot_title = 'Timezone offset',
                                   toplot=toplot)[1]
     tz_offset
