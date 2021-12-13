@@ -33,7 +33,9 @@ filter_to_user <- function(uid_filter=NULL,
 
   uid_data <- lapply(hyfe_data,function(x){
     if(!is.null(x)){
-      x <- x %>% dplyr::filter(uid %in% uid_filter)
+      if('uid' %in% names(x)){
+        x <- x %>% dplyr::filter(uid %in% uid_filter)
+      }
     }
     return(x)
   })

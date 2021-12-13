@@ -56,9 +56,6 @@ process_hyfe_data <- function(hyfe_data,
   ho$coughs <- coughs
 
 
-  # Cough bouts
-
-
   # Expand sessions
   #if(verbose){message('Expanding sessions')}
   #hyfe_time <- expand_sessions(hyfe_data,
@@ -86,7 +83,7 @@ process_hyfe_data <- function(hyfe_data,
     i=1
     for(i in 1:length(uids)){
       uidi <- uids[i]
-      uid_data <- filter_to_user(uid=uidi, hyfe_data)
+      uid_data <- filter_to_user(uid_filter=uidi, hyfe_data)
 
       if(nrow(uid_data$sessions[uid_data$sessions$duration > 0,]) > 0){
         if(verbose){message('--- building summary tables for user ',i,' out of ',length(uids),' : ',uidi)}
